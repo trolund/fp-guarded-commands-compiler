@@ -21,8 +21,8 @@ open GuardedCommands.Frontend.TypeCheck
 open GuardedCommands.Frontend.AST
 open GuardedCommands.Backend.CodeGeneration
 
-open ParserUtil
-open CompilerUtil
+open GuardedCommands.Util.ParserUtil
+open GuardedCommands.Util.CompilerUtil
 
 
 
