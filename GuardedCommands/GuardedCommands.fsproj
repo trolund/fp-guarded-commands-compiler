@@ -80,13 +80,11 @@
     <None Include="input/A1.gc" />
     <None Include="input/A2.gc" />
     <None Include="input/A3.gc" />
-    <None Include="input/A4.gc" />
     <None Include="input/Swap.gc" />
     <None Include="input/QuickSortV1.gc" />
     <None Include="input/par1.gc" />
     <None Include="input/factImpPTyp.gc" />
     <None Include="input/QuickSortV2.gc" />
-    <None Include="input/par2.gc" />
     <None Include="packages.config" />
     <None Include="app.config" />
   </ItemGroup>
