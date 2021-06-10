@@ -23,13 +23,26 @@ module CodeGeneration =
    type ParamDecs = (Typ * string) list
    type funEnv = Map<string, label * Typ option * ParamDecs>
 
+(* Bind declared variable in env and generate code to allocate it: *)   
+   let allocate (kind : int -> Var) (typ, x) (vEnv : varEnv)  =
+    let (env, fdepth) = vEnv 
+    match typ with
+    | ATyp (ATyp _, _) -> 
+      raise (Failure "allocate: array of arrays not permitted")
+    | ATyp (t, Some i) -> failwith "allocate: array not supported yet"
+    | _ -> 
+      let newEnv = (Map.add x (kind fdepth, typ) env, fdepth+1)
+      let code = [INCSP 1]
+      (newEnv, code)
+
 /// CE vEnv fEnv e gives the code for an expression e on the basis of a variable and a function environment
    let rec CE vEnv fEnv = 
        function
        | N n          -> [CSTI n]
        | B b          -> [CSTI (if b then 1 else 0)]
        | Access acc   -> CA vEnv fEnv acc @ [LDI] 
-
+       // muligvis ikke rigtig.
+       | Addr acc     -> CA vEnv fEnv acc @ [LDI] 
        | Apply("-", [e]) -> CE vEnv fEnv e @  [CSTI 0; SWAP; SUB]
 
        | Apply("&&",[b1;b2]) -> let labend   = newLabel()
@@ -44,7 +57,7 @@ module CodeGeneration =
                                           | "="  -> [EQ] 
                                           | _    -> failwith "CE: this case is not possible"
                                 CE vEnv fEnv e1 @ CE vEnv fEnv e2 @ ins 
-
+       
        | _            -> failwith "CE: not supported yet"
        
 
@@ -55,28 +68,17 @@ module CodeGeneration =
                                | AIndex(acc, e) -> failwith "CA: array indexing not supported yet" 
                                | ADeref e       -> failwith "CA: pointer dereferencing not supported yet"
 
-  
-(* Bind declared variable in env and generate code to allocate it: *)   
-   let allocate (kind : int -> Var) (typ, x) (vEnv : varEnv)  =
-    let (env, fdepth) = vEnv 
-    match typ with
-    | ATyp (ATyp _, _) -> 
-      raise (Failure "allocate: array of arrays not permitted")
-    | ATyp (t, Some i) -> failwith "allocate: array not supported yet"
-    | _ -> 
-      let newEnv = (Map.add x (kind fdepth, typ) env, fdepth+1)
-      let code = [INCSP 1]
-      (newEnv, code)
-
                       
 /// CS vEnv fEnv s gives the code for a statement s on the basis of a variable and a function environment                          
    let rec CS vEnv fEnv = function
        | PrintLn e        -> CE vEnv fEnv e @ [PRINTI; INCSP -1] 
-
        | Ass(acc,e)       -> CA vEnv fEnv acc @ CE vEnv fEnv e @ [STI; INCSP -1]
-
+       // return
+       | Alt (GC((b, stms)::alts)) -> let labend = newLabel()
+                                      CE vEnv fEnv b @ [IFZERO labend] @ CSs vEnv fEnv stms @ CS vEnv fEnv (Alt(GC(alts))) @ [Label labend]       
+       | Alt (GC ([]))             -> []                                                         
        | Block([],stms) ->   CSs vEnv fEnv stms
-
+        
        | _                -> failwith "CS: this statement is not supported yet"
 
    and CSs vEnv fEnv stms = List.collect (CS vEnv fEnv) stms 
