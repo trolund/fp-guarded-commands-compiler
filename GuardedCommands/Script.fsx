@@ -73,6 +73,19 @@ let pts = List.map parseFromFile ["Ex1.gc"; "Ex2.gc";"Ex3.gc"; "Ex4.gc"; "Ex5.gc
 // The parse tree for Ex3.gc
 List.item 2 pts ;;
 
+
+
+
+let ex3Tree = parseFromFile "Ex3.gc";;
+
+let tc = tcP ex3Tree;;
+
+let ex3Code = CP ex3Tree;; 
+
+let _ = go ex3Tree;;
+
+let _ = goTrace ex3Tree;;
+
 (*
 // Test of programs covered by the first task (Section 3.7):
 List.iter exec ["Ex1.gc"; "Ex2.gc";"Ex3.gc"; "Ex4.gc"; "Ex5.gc"; "Ex6.gc"; "Skip.gc"];;
