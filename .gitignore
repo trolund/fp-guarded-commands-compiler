@@ -1,3 +1,9 @@
 /.vs
 GuardedCommands/bin
 GuardedCommands/obj
+GuardedCommands/Lexer.fs
+GuardedCommands/Parser.fs
+GuardedCommands/Parser.fsi
+GuardedCommands/Parser.fsyacc.output
+.fake
+.ionide
