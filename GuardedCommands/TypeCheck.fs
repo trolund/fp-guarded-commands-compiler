@@ -11,13 +11,13 @@ module TypeCheck =
          | N _              -> ITyp   
          | B _              -> BTyp   
          | Access acc       -> tcA gtenv ltenv acc     
-         // TODO: Addr          
+                   
          | Apply(f,[e]) when List.exists (fun x ->  x=f) ["-"]  
                             -> tcMonadic gtenv ltenv f e        
 
          | Apply(f,[e1;e2]) when List.exists (fun x ->  x=f) ["+";"*"; "="; "&&"]        
                             -> tcDyadic gtenv ltenv f e1 e2   
-         
+
          | _                -> failwith "tcE: not supported yet"
 
    and tcMonadic gtenv ltenv f e = match (f, tcE gtenv ltenv e) with
@@ -54,19 +54,10 @@ module TypeCheck =
                          | PrintLn e -> ignore(tcE gtenv ltenv e)
                          | Ass(acc,e) -> if tcA gtenv ltenv acc = tcE gtenv ltenv e 
                                          then ()
-                                         else failwith "illtyped assignment"
-                         // TODO: Return                                
-                         | Alt gc -> tcGC gtenv ltenv gc
-                         | Do gc -> tcGC gtenv ltenv gc
+                                         else failwith "illtyped assignment"                                
+
                          | Block([],stms) -> List.iter (tcS gtenv ltenv) stms
-                         // TODO: Call
                          | _              -> failwith "tcS: this statement is not supported yet"
-   and tcGC gtenv ltenv = function
-      | (expr,stm)::t -> let stmt = (tcS gtenv ltenv stmt)
-                         if ((tcE gtenv ltenv expr = BTyp) && (List.forAll (fun (e,s) -> ((tcE gtenv ltenv e) = BTyp) && ((tcS gtenv ltenv s) = stmt)) t)
-                         then stmt 
-                         else failwith "illtyped guarded command"
-      | _ -> failwith "empty guarded command"
 
    and tcGDec gtenv = function  
                       | VarDec(t,s)               -> Map.add s t gtenv

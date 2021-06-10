@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.810.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "GuardedCommands", "GuardedCommands.fsproj", "{94A23C51-4C1B-4DEE-B396-B7A4E4F23711}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{94A23C51-4C1B-4DEE-B396-B7A4E4F23711}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94A23C51-4C1B-4DEE-B396-B7A4E4F23711}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94A23C51-4C1B-4DEE-B396-B7A4E4F23711}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94A23C51-4C1B-4DEE-B396-B7A4E4F23711}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3E9EC3C9-4BB8-4A19-A439-BFDC797EDA75}
+	EndGlobalSection
+EndGlobal

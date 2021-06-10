@@ -7,3 +7,4 @@ GuardedCommands/Parser.fsi
 GuardedCommands/Parser.fsyacc.output
 .fake
 .ionide
+.DS_Store
