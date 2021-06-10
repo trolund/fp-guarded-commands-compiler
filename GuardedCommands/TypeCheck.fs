@@ -54,11 +54,18 @@ module TypeCheck =
                          | PrintLn e -> ignore(tcE gtenv ltenv e)
                          | Ass(acc,e) -> if tcA gtenv ltenv acc = tcE gtenv ltenv e 
                                          then ()
-                                         else failwith "illtyped assignment"                                
-
+                                         else failwith "illtyped assignment"
+                         // TODO: Return                                
+                         | Alt gc -> tcGC gtenv ltenv gc
+                         | Do gc -> tcGC gtenv ltenv gc
                          | Block([],stms) -> List.iter (tcS gtenv ltenv) stms
+                         // TODO: Call
                          | _              -> failwith "tcS: this statement is not supported yet"
-
+   and tcGC gtenv ltenv = function
+      | GC(l) -> 
+                  if List.exists (fun (e,_) -> tcE gtenv ltenv e <> BTyp) l
+                  then failwith "illtyped boolean expression in guarded command"
+                  List.iter (fun (_,sl) -> List.iter (tcS gtenv ltenv) sl) l
    and tcGDec gtenv = function  
                       | VarDec(t,s)               -> Map.add s t gtenv
                       | FunDec(topt,f, decs, stm) -> failwith "type check: function/procedure declarations not yet supported"
