@@ -36,46 +36,51 @@ module CodeGeneration =
         | B b                   -> [CSTI (if b then 1 else 0)]
         | Access acc            -> CA vEnv fEnv acc @ [LDI] 
         | Addr acc              -> CA vEnv fEnv acc @ [LDI] // muligvis ikke rigtig.
-        | Apply("-", [e])       -> CE vEnv fEnv e @  [CSTI 0; SWAP; SUB]
+        | Apply("-", [e])       -> CE vEnv fEnv e @ [CSTI 0; SWAP; SUB]
+        | Apply("!", [b])       -> CE vEnv fEnv b @ [NOT]
         | Apply("&&", [b1; b2]) -> let labend   = newLabel()
                                    let labfalse = newLabel()
                                    CE vEnv fEnv b1 @ [IFZERO labfalse] @ CE vEnv fEnv b2
                                    @ [GOTO labend; Label labfalse; CSTI 0; Label labend]
-        | Apply(o,[e1;e2]) when List.exists (fun x -> o = x) ["+"; "*"; "="]
+        | Apply(o, [e1; e2]) when List.exists (fun x -> o = x) ["+"; "-"; "*"; "/"; "%"; "="; "<"]
                                 -> let ins = match o with
                                              | "+"  -> [ADD]
+                                             | "-"  -> [SUB]
                                              | "*"  -> [MUL]
-                                             | "="  -> [EQ] 
+                                             | "/"  -> [DIV]
+                                             | "%"  -> [MOD]
+                                             | "="  -> [EQ]
+                                             | "<"  -> [LT]
                                              | _    -> failwith "CE: this case is not possible"
                                    CE vEnv fEnv e1 @ CE vEnv fEnv e2 @ ins
         | _            -> failwith "CE: not supported yet"
     /// CA vEnv fEnv acc gives the code for an access acc on the basis of a variable and a function environment
     and CA vEnv fEnv = function 
         | AVar x          -> match Map.find x (fst vEnv) with
-                             | (GloVar addr,_) -> [CSTI addr]
-                             | (LocVar addr,_) -> failwith "CA: Local variables not supported yet"
+                             | (GloVar addr, _) -> [CSTI addr]
+                             | (LocVar addr, _) -> failwith "CA: Local variables not supported yet"
         | AIndex(acc, e)  -> failwith "CA: array indexing not supported yet" 
         | ADeref e        -> failwith "CA: pointer dereferencing not supported yet"
 
     /// CS vEnv fEnv s gives the code for a statement s on the basis of a variable and a function environment                          
     let rec CS vEnv fEnv = function
-        | PrintLn e      -> CE vEnv fEnv e @ [PRINTI; INCSP -1] 
-        | Ass(acc, e)    -> CA vEnv fEnv acc @ CE vEnv fEnv e @ [STI; INCSP -1]
+        | PrintLn e       -> CE vEnv fEnv e @ [PRINTI; INCSP -1] 
+        | Ass(acc, e)     -> CA vEnv fEnv acc @ CE vEnv fEnv e @ [STI; INCSP -1]
         // return
-        | Alt (gc)       -> let labnext = newLabel()
-                            let labend = newLabel()
-                            match gc with
-                                | GC ([])              -> []
-                                | GC ((b, stms)::alts) -> CE vEnv fEnv b @ 
-                                                          [DUP] @
-                                                          [IFZERO labnext] @ 
-                                                          [IFNZRO labend] @ 
-                                                          CSs vEnv fEnv stms @
-                                                          [Label labnext] @ 
-                                                          CS vEnv fEnv (Alt(GC(alts)))   
-                                                          @ [Label labend]
-        | Block([],stms) -> CSs vEnv fEnv stms
-        | _              -> failwith "CS: this statement is not supported yet"
+        | Alt (gc)        -> let labnext = newLabel()
+                             let labend = newLabel()
+                             match gc with
+                                 | GC ([])              -> []
+                                 | GC ((b, stms)::alts) -> CE vEnv fEnv b @ 
+                                                           [DUP] @
+                                                           [IFZERO labnext] @ 
+                                                           [IFNZRO labend] @ 
+                                                           CSs vEnv fEnv stms @
+                                                           [Label labnext] @ 
+                                                           CS vEnv fEnv (Alt(GC(alts)))   
+                                                           @ [Label labend]
+        | Block([], stms) -> CSs vEnv fEnv stms
+        | _               -> failwith "CS: this statement is not supported yet"
     and CSs vEnv fEnv stms = List.collect (CS vEnv fEnv) stms 
 
     (* ------------------------------------------------------------------- *)
