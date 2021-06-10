@@ -1,5 +1,0 @@
-﻿begin
-res : int;
-res := 4;
-print res
-end
