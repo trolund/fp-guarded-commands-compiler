@@ -37,8 +37,7 @@ module TypeCheck =
 
 /// tcA gtenv ltenv e gives the type for access acc on the basis of type environments gtenv and ltenv
 /// for global and local variables 
-   and tcA gtenv ltenv = 
-         function 
+   and tcA gtenv ltenv = function 
          | AVar x         -> match Map.tryFind x ltenv with
                              | None   -> match Map.tryFind x gtenv with
                                          | None   -> failwith ("no declaration for : " + x)
