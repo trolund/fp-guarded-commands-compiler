@@ -74,9 +74,18 @@ module CodeGeneration =
        | PrintLn e        -> CE vEnv fEnv e @ [PRINTI; INCSP -1] 
        | Ass(acc,e)       -> CA vEnv fEnv acc @ CE vEnv fEnv e @ [STI; INCSP -1]
        // return
-       | Alt (GC((b, stms)::alts)) -> let labend = newLabel()
-                                      CE vEnv fEnv b @ [IFZERO labend] @ CSs vEnv fEnv stms @ CS vEnv fEnv (Alt(GC(alts))) @ [Label labend]       
-       | Alt (GC ([]))             -> []                                                         
+       | Alt (gc) -> let labnext = newLabel()
+                     let labend = newLabel()
+                     match gc with
+                     | GC ([])              -> []
+                     | GC ((b, stms)::alts) -> CE vEnv fEnv b @ 
+                                               [DUP] @
+                                               [IFZERO labnext] @ 
+                                               [IFNZRO labend] @ 
+                                               CSs vEnv fEnv stms @
+                                               [Label labnext] @ 
+                                               CS vEnv fEnv (Alt(GC(alts)))   
+                                               @ [Label labend]
        | Block([],stms) ->   CSs vEnv fEnv stms
         
        | _                -> failwith "CS: this statement is not supported yet"

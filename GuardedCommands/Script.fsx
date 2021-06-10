@@ -78,13 +78,15 @@ List.item 2 pts ;;
 
 let ex3Tree = parseFromFile "Ex3.gc";;
 
-let tc = tcP ex3Tree;;
+let _ = tcP ex3Tree;;
 
 let ex3Code = CP ex3Tree;; 
 
 let _ = go ex3Tree;;
 
 let _ = goTrace ex3Tree;;
+
+let _ = exec "Ex3.gc";;
 
 (*
 // Test of programs covered by the first task (Section 3.7):
