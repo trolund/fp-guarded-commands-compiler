@@ -9,3 +9,4 @@ GuardedCommands/Parser.fsyacc.output
 .ionide
 .DS_Store
 GuardedCommands/.vscode/settings.json
+GuardedCommands/.vs/

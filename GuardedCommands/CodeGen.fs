@@ -49,7 +49,11 @@ module CodeGeneration =
                                              CE vEnv fEnv b1 @ CE vEnv fEnv b2 @ [LT] @ [IFNZRO labtrue] @
                                              CE vEnv fEnv b1 @ CE vEnv fEnv b2 @ [EQ] @ [IFNZRO labtrue] @
                                              [CSTI 0] @ [GOTO labend] @ [Label labtrue] @ [CSTI 1] @ [Label labend]
-                                   | ">=" -> failwith "CE: >= is not supported"
+                                   | ">=" -> let labend = newLabel()
+                                             let labtrue = newLabel()
+                                             CE vEnv fEnv b1 @ CE vEnv fEnv b2 @ [LT; NOT] @ [IFNZRO labtrue] @
+                                             CE vEnv fEnv b1 @ CE vEnv fEnv b2 @ [EQ] @ [IFNZRO labtrue] @
+                                             [CSTI 0] @ [GOTO labend] @ [Label labtrue] @ [CSTI 1] @ [Label labend]
                                    | "<>" -> [EQ; NOT]
                                    | _    -> failwith "CE: this case is not possible"
         | Apply(o, [e1; e2]) when List.exists (fun x -> o = x) ["+"; "-"; "*"; "/"; "%"; "="; "<"; ">"]
