@@ -20,6 +20,7 @@ let keyword s =
     | "od"        -> OD     
     | "true"      -> BOOL(true) 
     | "false"     -> BOOL(false)
+    | "function"  -> FUN
     | _           -> NAME s  
 }
 
