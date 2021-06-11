@@ -1,10 +1,10 @@
 begin
-  x : int;
-  x := 4;
-  
+  x : int,
   y : int;
+  x := 4;
   y := 2;
  
   print x > y;
-  print y > x
+  print y > x;
+  print x > x
 end

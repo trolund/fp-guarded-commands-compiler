@@ -1,9 +1,9 @@
 begin
-   x : bool;
-   x := true;
- 
+   x : bool,
    y : bool;
-   y := false;
+   x := true;
+   y := true;
  
-   print x
+   print x && y;
+   print y && (x && false) 
 end
