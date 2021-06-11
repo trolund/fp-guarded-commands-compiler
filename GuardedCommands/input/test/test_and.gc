@@ -1,0 +1,9 @@
+begin
+   x : bool;
+   x := true;
+ 
+   y : bool;
+   y := false;
+ 
+   print x
+end

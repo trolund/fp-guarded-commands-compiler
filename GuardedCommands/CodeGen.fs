@@ -37,12 +37,22 @@ module CodeGeneration =
         | Access acc            -> CA vEnv fEnv acc @ [LDI] 
         | Addr acc              -> CA vEnv fEnv acc @ [LDI] // muligvis ikke rigtig.
         | Apply("-", [e])       -> CE vEnv fEnv e @ [CSTI 0; SWAP; SUB]
-        | Apply("!", [b])       -> CE vEnv fEnv b @ [NOT]
-        | Apply("&&", [b1; b2]) -> let labend   = newLabel()
-                                   let labfalse = newLabel()
-                                   CE vEnv fEnv b1 @ [IFZERO labfalse] @ CE vEnv fEnv b2
-                                   @ [GOTO labend; Label labfalse; CSTI 0; Label labend]
-        | Apply(o, [e1; e2]) when List.exists (fun x -> o = x) ["+"; "-"; "*"; "/"; "%"; "="; "<"]
+        | Apply("!", [b])       -> CE vEnv fEnv b @ [NOT] // muligvis ikke rigtig.
+        | Apply(o, [b1; b2]) when List.exists (fun x -> o = x) ["&&"; "<="; ">="; "<>"]
+                                -> match o with
+                                   | "&&" -> let labend   = newLabel()
+                                             let labfalse = newLabel()
+                                             CE vEnv fEnv b1 @ [IFZERO labfalse] @ CE vEnv fEnv b2
+                                             @ [GOTO labend; Label labfalse; CSTI 0; Label labend]
+                                   | "<=" -> let labend = newLabel()
+                                             let labtrue = newLabel()
+                                             CE vEnv fEnv b1 @ CE vEnv fEnv b2 @ [LT] @ [IFNZRO labtrue] @
+                                             CE vEnv fEnv b1 @ CE vEnv fEnv b2 @ [EQ] @ [IFNZRO labtrue] @
+                                             [CSTI 0] @ [GOTO labend] @ [Label labtrue] @ [CSTI 1] @ [Label labend]
+                                   | ">=" -> failwith "CE: >= is not supported"
+                                   | "<>" -> [EQ; NOT]
+                                   | _    -> failwith "CE: this case is not possible"
+        | Apply(o, [e1; e2]) when List.exists (fun x -> o = x) ["+"; "-"; "*"; "/"; "%"; "="; "<"; ">"]
                                 -> let ins = match o with
                                              | "+"  -> [ADD]
                                              | "-"  -> [SUB]
@@ -51,6 +61,7 @@ module CodeGeneration =
                                              | "%"  -> [MOD]
                                              | "="  -> [EQ]
                                              | "<"  -> [LT]
+                                             | ">"  -> [LT; NOT] // må være < negated?
                                              | _    -> failwith "CE: this case is not possible"
                                    CE vEnv fEnv e1 @ CE vEnv fEnv e2 @ ins
         | _            -> failwith "CE: not supported yet"

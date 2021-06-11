@@ -49,8 +49,8 @@ rule tokenize =
   | ";"         { SEMI  }
   | ":"         { COLON }
   | "|"         { BAR }
-  | "->"        { TO }
-  | ":="        { ASG   }
+  | "->"        { TO  }
+  | ":="        { ASG }
   | "!"         { NEG }
   | "&&"        { AND }
   | "<>"        { NEQ }

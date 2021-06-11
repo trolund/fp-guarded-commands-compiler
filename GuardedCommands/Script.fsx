@@ -28,6 +28,39 @@ open CompilerUtil
 
 System.IO.Directory.SetCurrentDirectory __SOURCE_DIRECTORY__;;
 
+// Basic tets ///////////////////////////////
+
+let testAndTree = parseFromFile "test/test_and.gc";;
+
+let _ = tcP testAndTree;;
+
+let testAndCode = CP testAndTree;; 
+
+let _ = go testAndTree;;
+
+let _ = goTrace testAndTree;;
+
+let _ = exec "test/test_and.gc";;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // The Ex0.gc example:
 
 let ex0Tree = parseFromFile "Ex0.gc";;
