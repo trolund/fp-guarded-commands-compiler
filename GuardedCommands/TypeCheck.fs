@@ -60,6 +60,9 @@ module TypeCheck =
                          | Alt gc -> tcGC gtenv ltenv gc
                          | Do gc -> tcGC gtenv ltenv gc
                          | Block([],stms) -> List.iter (tcS gtenv ltenv) stms
+                         | Block(decs, stms) -> let gtenvCopy = Map.fold (fun acc key value -> Map.add key value acc) Map.empty gtenv   //Copy gtenv
+                                                let ltenv = tcLDecs (gtenvCopy) decs                                                    //Merge global variables with the new local declaration
+                                                List.iter(tcS gtenvCopy ltenv) stms
                          // TODO: Call
                          | _              -> failwith "tcS: this statement is not supported yet"
    and tcGC gtenv ltenv = function
@@ -74,6 +77,14 @@ module TypeCheck =
    and tcGDecs gtenv = function
                        | dec::decs -> tcGDecs (tcGDec gtenv dec) decs
                        | _         -> gtenv
+   //Typechecking local env
+   and tcLDec ltenv = function
+      | VarDec(t,s)  -> Map.add s t ltenv
+      | FunDec(_)    -> failwith "function declaration not allowed in block"
+   and tcLDecs ltenv = function
+      | dec::decs    -> tcLDecs (tcLDec ltenv dec) decs
+      | _            -> ltenv
+   
 
 
 /// tcP prog checks the well-typeness of a program prog
