@@ -44,7 +44,7 @@ module CodeGeneration =
                                              let labfalse = newLabel()
                                              CE vEnv fEnv b1 @ [IFZERO labfalse] @ CE vEnv fEnv b2
                                              @ [GOTO labend; Label labfalse; CSTI 0; Label labend]
-                                   | "<>" -> [EQ; NOT]
+                                   | "<>" -> CE vEnv fEnv b1 @ CE vEnv fEnv b2 @ [EQ; NOT]
                                    | _    -> failwith "CE: this case is not possible"
         | Apply(o, [e1; e2]) when List.exists (fun x -> o = x) ["+"; "-"; "*"; "/"; "%"; "="; "<"; ">"; "<="; ">="]
                                 -> let ins = match o with
@@ -55,15 +55,15 @@ module CodeGeneration =
                                              | "%"  -> [MOD]
                                              | "="  -> [EQ]
                                              | "<"  -> [LT]
-                                             | ">"  -> CE vEnv fEnv e2 @ CE vEnv fEnv e1 @ [DIV; CSTI 0; EQ]
+                                             | ">"  -> [SWAP; SUB; CSTI 0; LT]
                                              | "<=" -> let labend = newLabel()
                                                        let labtrue = newLabel()
-                                                       CE vEnv fEnv e1 @ CE vEnv fEnv e2 @ [LT] @ [IFNZRO labtrue] @
+                                                       [LT] @ [IFNZRO labtrue] @
                                                        CE vEnv fEnv e1 @ CE vEnv fEnv e2 @ [EQ] @ [IFNZRO labtrue] @
                                                        [CSTI 0] @ [GOTO labend] @ [Label labtrue] @ [CSTI 1] @ [Label labend]
                                              | ">=" -> let labend = newLabel()
                                                        let labtrue = newLabel()
-                                                       CE vEnv fEnv e2 @ CE vEnv fEnv e1 @ [DIV; CSTI 0; EQ] @ [IFNZRO labtrue] @
+                                                       [SWAP; DIV; CSTI 0; EQ] @ [IFNZRO labtrue] @
                                                        CE vEnv fEnv e1 @ CE vEnv fEnv e2 @ [EQ] @ [IFNZRO labtrue] @
                                                        [CSTI 0] @ [GOTO labend] @ [Label labtrue] @ [CSTI 1] @ [Label labend]
                                              | _    -> failwith "CE: this case is not possible"
@@ -82,22 +82,35 @@ module CodeGeneration =
         | PrintLn e       -> CE vEnv fEnv e @ [PRINTI; INCSP -1] 
         | Ass(acc, e)     -> CA vEnv fEnv acc @ CE vEnv fEnv e @ [STI; INCSP -1]
         // return
-        | Alt (gc)        -> let labnext = newLabel()
-                             let labend = newLabel()
-                             match gc with
-                                 | GC ([])              -> []
-                                 | GC ((b, stms)::alts) -> CE vEnv fEnv b @ 
-                                                           [DUP] @
-                                                           [IFZERO labnext] @ 
-                                                           [IFNZRO labend] @ 
-                                                           CSs vEnv fEnv stms @
-                                                           [Label labnext] @ 
-                                                           CS vEnv fEnv (Alt(GC(alts)))   
-                                                           @ [Label labend]
+        | Alt (gc)        -> let endLabel = newLabel()
+                             alt' vEnv fEnv endLabel gc @ 
+                             [STOP] @
+                             [Label endLabel]
+        | Do (gc)         -> let startLabel = newLabel()
+                             [Label startLabel] @
+                             do' vEnv fEnv startLabel gc                       
         | Block([], stms) -> CSs vEnv fEnv stms
         | _               -> failwith "CS: this statement is not supported yet"
     and CSs vEnv fEnv stms = List.collect (CS vEnv fEnv) stms 
 
+    and alt' vEnv fEnv el = function
+        | GC ([])              -> []
+        | GC ((b, stms)::alts) -> let labnext = newLabel()
+                                  CE vEnv fEnv b @
+                                  [IFZERO labnext] @ 
+                                  CSs vEnv fEnv stms @
+                                  [GOTO el] @
+                                  [Label labnext] @
+                                  alt' vEnv fEnv el (GC (alts))
+    and do' vEnv fEnv sl = function
+        | GC ([])              -> []
+        | GC ((b, stms)::alts) -> let labnext = newLabel()
+                                  CE vEnv fEnv b @
+                                  [IFZERO labnext] @ 
+                                  CSs vEnv fEnv stms @
+                                  [GOTO sl] @
+                                  [Label labnext] @
+                                  do' vEnv fEnv sl (GC (alts))
     (* ------------------------------------------------------------------- *)
     
     (* Build environments for global variables and functions *)

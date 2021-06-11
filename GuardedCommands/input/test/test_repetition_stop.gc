@@ -1,0 +1,9 @@
+begin
+  x : int;
+  x := 4;
+  if  x=3 -> print 3
+   |  x=5 -> print 5
+   |  x=6 -> x:=6
+  fi;
+  print 10
+end
