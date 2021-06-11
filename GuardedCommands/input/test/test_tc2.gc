@@ -1,0 +1,6 @@
+
+begin 
+   x: int,
+   function f(x: int): int = x + 3; 
+   print x
+end

@@ -72,7 +72,15 @@ module TypeCheck =
                   List.iter (fun (_,sl) -> List.iter (tcS gtenv ltenv) sl) l
    and tcGDec gtenv = function  
                       | VarDec(t,s)               -> Map.add s t gtenv
-                      | FunDec(topt,f, decs, stm) -> failwith "type check: function/procedure declarations not yet supported"
+                      | FunDec(Some(t),f, decs, stm) ->
+                           // Parameters should be different
+                           // Make new type-environment
+                           //    Include every parameter
+                           //    Include function itself
+                           // Check every return statement has type t
+                           // Check stm is well-typed
+                           failwith "type check: function declaration"
+                      | FunDec(None, f, decs, stm) -> failwith "type check: procedure declarations not yet supported"
 
    and tcGDecs gtenv = function
                        | dec::decs -> tcGDecs (tcGDec gtenv dec) decs
