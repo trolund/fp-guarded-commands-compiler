@@ -5,5 +5,7 @@ begin
    y := false;
  
    print x || y;
-   print y || x
+   print y || x;
+   print y || y;
+   print false || false
 end
