@@ -1,6 +1,8 @@
-
 begin 
    x: int,
-   function f(x: int): int = x + 3; 
-   print x
+   function f(x: int): int = { 
+      y := 1;
+      z := true; 
+      print x
+   } ;
 end

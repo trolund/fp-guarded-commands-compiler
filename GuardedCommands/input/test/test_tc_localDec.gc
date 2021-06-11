@@ -1,0 +1,10 @@
+begin 
+   x: int,
+   y: int,
+   function f(x: int): int = { 
+      z: int;
+      y := 3;
+      z := 5 + x
+   };
+   x := 2
+end
