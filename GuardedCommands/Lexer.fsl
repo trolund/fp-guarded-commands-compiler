@@ -53,18 +53,18 @@ rule tokenize =
   | ":="        { ASG }
   | "!"         { NEG }
   | "&&"        { AND }
-  | "||"        { OR }
+  | "||"        { OR  }
   | "<>"        { NEQ }
   | "<"         { LT }
   | ">"         { GT }
   | "<="        { LE } 
   | ">="        { GE }
   | "*"         { TIMES }
-  | "/"         { DIV }
-  | "%"         { MOD }
+  | "/"         { DIV   }
+  | "%"         { MOD   }
   | "-"         { MINUS }
-  | "="         { EQ }
-  | "+"         { PLUS }   
+  | "="         { EQ    }
+  | "+"         { PLUS  }   
   | identifier  { keyword(Encoding.UTF8.GetString(lexbuf.Lexeme)) }
-  | eof         { EOF }
+  | eof         { EOF   }
 
