@@ -53,11 +53,15 @@ rule tokenize =
   | ":="        { ASG   }
   | "!"         { NEG }
   | "&&"        { AND }
+  | "||"        { OR }
   | "<>"        { NEQ }
   | "<"         { LT }
   | ">"         { GT }
   | "<="        { LE } 
+  | ">="        { GE }
   | "*"         { TIMES }
+  | "/"         { DIV }
+  | "%"         { MOD }
   | "-"         { MINUS }
   | "="         { EQ }
   | "+"         { PLUS }   
