@@ -1,8 +1,6 @@
 begin 
    x: int,
-   function f(x: int): int = { 
-      y := 1;
-      z := true; 
-      print x
-   } ;
+   function fact(n: int): int = if n=0 -> return n
+                              | true -> return n
+                              fi; 
 end
