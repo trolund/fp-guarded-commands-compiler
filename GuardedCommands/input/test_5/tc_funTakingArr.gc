@@ -1,0 +1,4 @@
+begin 
+   a: int[3],
+   function f(x: int[]): int = { y: int; y:= 1; return y };
+end

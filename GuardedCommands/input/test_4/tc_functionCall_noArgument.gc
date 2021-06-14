@@ -4,6 +4,5 @@ begin
       print x + 2;
       return x
    };
-   y := f(2);
-   print y
+   y := f()
 end
