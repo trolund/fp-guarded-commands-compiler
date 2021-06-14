@@ -1,0 +1,7 @@
+begin 
+   y : int,
+   function f(x: int) : int = {
+      return x + y
+   };
+   y := 2
+end

@@ -119,8 +119,8 @@ module CodeGeneration =
                                   do' vEnv fEnv sl (GC (alts))
 
     let rec compileFunc vEnv fEnv = function
-         | VarDec (_, _)            -> failwith "compileFunc: VarDec is not a function"
-         | FunDec (_, s, decs, stm) -> let label = match Map.tryFind s fEnv with
+         | VarDec (_, s)            -> []
+         | FunDec (_, s, _, stm)    -> let label = match Map.tryFind s fEnv with
                                                    | Some (label', _, _) -> label'
                                                    | None                -> failwith ("compileFunc: Could not find function label '" + s + "'")
                                        [GOTO label] @
