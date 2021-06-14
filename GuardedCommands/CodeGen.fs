@@ -85,7 +85,9 @@ module CodeGeneration =
     let rec CS vEnv fEnv = function
         | PrintLn e       -> CE vEnv fEnv e @ [PRINTI; INCSP -1] 
         | Ass(acc, e)     -> CA vEnv fEnv acc @ CE vEnv fEnv e @ [STI; INCSP -1]
-        // return
+        | Return(o)       -> match o with   
+                             | Some(v) -> CE vEnv fEnv v @ [RET (snd vEnv)]
+                             | None    -> [RET (snd vEnv - 1)]
         | Alt (gc)        -> let endLabel = newLabel()
                              alt' vEnv fEnv endLabel gc @ 
                              [STOP] @
