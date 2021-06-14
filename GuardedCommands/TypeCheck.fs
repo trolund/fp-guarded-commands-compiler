@@ -80,16 +80,17 @@ module TypeCheck =
                            let ltenv' = Map.add f t (List.fold tcGDec Map.empty decs)
                            // Check every return statement has type t
                            // Check stm is well-typed
-                           if not (tcFunDec gtenv ltenv' t stm)
+                           if not (tcFunDecBod gtenv ltenv' t stm)
                            then failwith "type check: function body missing return statement"
                            Map.add f t gtenv
                       | FunDec(None, f, decs, stm) -> failwith "type check: procedure declarations not yet supported"
-
+   and tcFunDecBod gtenv ltenv t = function
+      | Block(decs, stmts) -> let ltenv' = tcLDecs (ltenv) decs
+                              List.fold (fun seen stmt -> tcFunDec gtenv ltenv' t stmt || seen) false stmts
+      | stm -> tcFunDec gtenv ltenv t stm
    and tcFunDec gtenv ltenv t = function
                                 | Return(Some(t')) when t=(tcE gtenv ltenv t') -> true
                                 | Return(_) -> failwith "type check: return type mismatch"
-                                | Block(decs, stmts) -> let ltenv' = tcLDecs (ltenv) decs
-                                                        List.fold (fun seen stmt -> tcFunDec gtenv ltenv' t stmt || seen) false stmts
                                 | Do(GC(l)) | Alt(GC(l)) ->
                                                         if List.exists (fun (e,_) -> tcE gtenv ltenv e <> BTyp) l
                                                         then failwith "type check: illtyped boolean expression in guarded command"
