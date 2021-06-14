@@ -143,8 +143,9 @@ module CodeGeneration =
 
     let rec compileFunc vEnv fEnv = function
          | VarDec (_, _)         -> []
-         | FunDec (_, s, _, stm) -> let (label, _, p) = lookupFun fEnv s
-                                    let localfEnv = addLocVars vEnv p
+         | FunDec (_, s, _, stm) -> let vEnv' = (fst vEnv, 0)
+                                    let (label, _, p) = lookupFun fEnv s
+                                    let localfEnv = addLocVars vEnv' p
                                     [Label label] @
                                     CS localfEnv fEnv stm @
                                     [RET (List.length p - 1)]
