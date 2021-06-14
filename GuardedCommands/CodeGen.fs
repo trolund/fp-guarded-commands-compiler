@@ -118,37 +118,25 @@ module CodeGeneration =
                                   [Label labnext] @
                                   do' vEnv fEnv sl (GC (alts))
 
-    let rec CD vEnv fEnv = function
-        | VarDec (_, s) -> let (vEnvMap, _) = vEnv
-                           let addr = match Map.tryFind s vEnvMap with
-                                      | Some ((v, _)) -> match v with
-                                                         | GloVar a -> a
-                                                         | LocVar a -> a
-                                      | None          -> failwith ("CD: Could not find variable '" + s + "' in vEnv")
-                           [CSTI addr; LDI]
-        | FunDec (_, s, decs, stm) -> let label = match Map.tryFind s fEnv with
-                                                  | Some (label', opt, t) -> label'
-                                                  | None                  -> failwith ("CD: Could not find function '" + s + "' in fEnv")
-                                      [GOTO label] @
-                                      CDs vEnv fEnv decs @
-                                      CS vEnv fEnv stm
-    and CDs vEnv fEnv decs = List.collect (CD vEnv fEnv) decs
+    let rec compileFunc vEnv fEnv = function
+         | VarDec (_, _)            -> failwith "compileFunc: VarDec is not a function"
+         | FunDec (_, s, decs, stm) -> let label = match Map.tryFind s fEnv with
+                                                   | Some (label', _, _) -> label'
+                                                   | None                -> failwith ("compileFunc: Could not find function label '" + s + "'")
+                                       [GOTO label] @
+                                       // compileFuncs vEnv fEnv decs @ this should never happen
+                                       CS vEnv fEnv stm
+    and compileFuncs vEnv fEnv decs = List.collect (compileFunc vEnv fEnv) decs
                           
-
     
     (* ------------------------------------------------------------------- *)
     
     (* Build environments for global variables and functions *)
- 
-    
-
     let makeGlobalEnvs decs = 
         let decv = function
             | VarDec (t, s)       -> (t, s)
-            | FunDec (o, s, _, _) -> match o with
-                                     | Some(t) -> (t, s)
-                                     | None    -> (ITyp, s) // if no type is returned, 
-                                                            // int is implicity returned                                        
+            | FunDec (_, _, _, _) -> failwith ("decv: A function parameter can not be a function itself")
+
         let rec addv decs vEnv (fEnv : funEnv) = 
             match decs with
             | []         -> (vEnv, fEnv, [])
@@ -159,8 +147,9 @@ module CodeGeneration =
                             | FunDec (tyOpt, f, xs, _) -> addv decr vEnv (fEnv.Add(f, (newLabel(), tyOpt, List.map decv xs)))
         addv decs (Map.empty, 0) Map.empty
 
+
     /// CP prog gives the code for a program prog
     let CP (P(decs, stms)) = 
        let _ = resetLabels ()
        let ((gvM, _) as gvEnv, fEnv, initCode) = makeGlobalEnvs decs
-       initCode @ CSs gvEnv fEnv stms @ [STOP]
+       initCode @ CSs gvEnv fEnv stms @ [STOP] @ compileFuncs gvEnv fEnv decs
