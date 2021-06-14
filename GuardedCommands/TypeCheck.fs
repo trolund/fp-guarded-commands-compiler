@@ -5,6 +5,16 @@ open GuardedCommands.Frontend.AST
 
 module TypeCheck = 
 
+   //Helper functions
+
+   //Compare types between function declaration and function application
+   let rec compareTypes xl yl =
+      match xl, yl with 
+      | [], []       -> true
+      | [], y::ys    -> false
+      | x::xs, []    -> false
+      | x::xs, y::ys -> x = y && compareTypes xs ys
+
 /// tcE gtenv ltenv e gives the type for expression e on the basis of type environments gtenv and ltenv
 /// for global and local variables 
    let rec tcE gtenv ltenv = function                            
@@ -17,7 +27,7 @@ module TypeCheck =
 
          | Apply(f,[e1;e2]) when List.exists (fun x ->  x=f) ["+"; "-"; "*"; "/"; "%";"="; "<="; ">="; "<>"; "<"; ">"; "&&"; "||"]        
                             -> tcDyadic gtenv ltenv f e1 e2   
-         //| Apply(f, es)     -> failwith "function application not supported yet"
+         | Apply(f, es)     -> tcNaryFunction gtenv ltenv f es
          | _                -> failwith "tcE: not supported yet"
 
    and tcMonadic gtenv ltenv f e = match (f, tcE gtenv ltenv e) with
@@ -31,7 +41,17 @@ module TypeCheck =
                                       | (o, BTyp, BTyp) when List.exists (fun x ->  x=o) ["=";"<>";"&&";"||"]     -> BTyp 
                                       | _                      -> failwith("illegal/illtyped dyadic expression: " + f)
 
-   and tcNaryFunction gtenv ltenv f es = failwith "type check: functions not supported yet"
+   and tcNaryFunction gtenv ltenv f es = let fType = Option.get(Map.tryFind f gtenv)
+                                         //Convert expression list to type list
+                                         let expList = List.rev (List.fold (fun acc e -> tcE gtenv ltenv e::acc) [] es)
+                                         
+                                         //Return function type (i.e. return type) if the expression list' type matches the declaration type
+                                         match fType with
+                                          | FTyp(tl, Some(t)) -> if not (compareTypes tl expList) then failwith "Invalid argument types"
+                                                                 else t
+                                          | _                 -> failwith "invalid function application type"
+   
+   //failwith "type check: functions not supported yet"
  
    and tcNaryProcedure gtenv ltenv f es = failwith "type check: procedures not supported yet"
       
@@ -59,7 +79,14 @@ module TypeCheck =
                          | Alt gc -> tcGC gtenv ltenv gc
                          | Do gc -> tcGC gtenv ltenv gc
                          | Block([],stms) -> List.iter (tcS gtenv ltenv) stms
-                         | Call(name, exps)  -> failwith "function call not supported yet"
+                         | Call(name, exps)  -> failwith "procedure not defined"
+                                                //match fType with
+                                                //   | None    -> failwith "function/procedure not defined"
+                                                //   | Some(FTyp(tl, None))    -> ()
+                                                //   | Some(FTyp(tl, Some(t))) -> let expList = List.rev (List.fold (fun acc e -> tcE gtenv ltenv e::acc) [] exps)
+                                                //                                if compareTypes tl expList //Match element by element if they have the same type
+                                                //                                then ()
+
                          // TODO: Call
                          | _              -> failwith "tcS: this statement is not supported yet"
    and tcGC gtenv ltenv = function
@@ -114,5 +141,3 @@ module TypeCheck =
 /// tcP prog checks the well-typeness of a program prog
    and tcP(P(decs, stms)) = let gtenv = tcGDecs Map.empty decs
                             List.iter (tcS gtenv Map.empty) stms
-
-  
