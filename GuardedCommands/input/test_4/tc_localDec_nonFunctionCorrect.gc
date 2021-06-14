@@ -1,0 +1,8 @@
+begin 
+   x: int,
+   y: int;
+   {
+      print 1
+   };
+   x := 2
+end

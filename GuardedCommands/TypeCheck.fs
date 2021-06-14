@@ -79,6 +79,7 @@ module TypeCheck =
                          | Alt gc -> tcGC gtenv ltenv gc
                          | Do gc -> tcGC gtenv ltenv gc
                          | Block([],stms) -> List.iter (tcS gtenv ltenv) stms
+                         | Block(_, _)    -> failwith "Local declaration has to be assigned to a function/procedure declaration"
                          | Call(name, exps)  -> failwith "procedure not defined"
                                                 //match fType with
                                                 //   | None    -> failwith "function/procedure not defined"
