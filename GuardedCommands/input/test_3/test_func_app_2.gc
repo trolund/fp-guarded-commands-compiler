@@ -1,0 +1,10 @@
+begin 
+   y : int,
+   z : int,
+   function f(x : int) : int = {
+      return x + 1
+   };
+   y := 10;
+   z := f(y);
+   print z
+end

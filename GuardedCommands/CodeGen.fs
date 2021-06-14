@@ -27,14 +27,15 @@ module CodeGeneration =
     let addLocVars vEnv p : varEnv = let (vEnv', fdepth) = vEnv
                                      List.fold addLocVar (vEnv', fdepth) p
 
-    let lookupFun fEnv s = 
+    let lookupFun fEnv s  = 
                 match Map.tryFind s fEnv with 
-                | None    -> failwith (s + " not found.")
+                | None    -> failwith ("lookup: " + s + " not found.")
                 | Some(x) -> x 
-
+                
     let lookupVar vEnv s = 
-                let (env, _) = vEnv
-                lookup env s
+                match Map.tryFind s vEnv with 
+                | None    -> failwith ("lookup: " + s + " not found.")
+                | Some(x) -> x 
 
     (* Bind declared variable in env and generate code to allocate it: *)   
     let allocate (kind : int -> Var) (typ, x) (vEnv : varEnv) =
@@ -88,12 +89,18 @@ module CodeGeneration =
                                                        [CSTI 0] @ [GOTO labend] @ [Label labtrue] @ [CSTI 1] @ [Label labend]
                                              | _    -> failwith "CE: this case is not possible"
                                    CE vEnv fEnv e1 @ CE vEnv fEnv e2 @ ins
+        | Apply(f, es) -> let (label, _, p) = lookupFun fEnv f
+                          let pLen = List.length p
+                          CEs vEnv fEnv es @
+                          [CALL (pLen, label)]
         | _            -> failwith "CE: not supported yet"
+    and CEs vEnv fEnv es = List.collect (CE vEnv fEnv) es
+
     /// CA vEnv fEnv acc gives the code for an access acc on the basis of a variable and a function environment
     and CA vEnv fEnv = function 
-        | AVar x          -> match Map.find x (fst vEnv) with
+        | AVar x          -> match lookupVar (fst vEnv) x with
                              | (GloVar addr, _) -> [CSTI addr]
-                             | (LocVar addr, _) -> failwith "CA: Local variables not supported yet"
+                             | (LocVar addr, _) -> [GETBP; CSTI addr; ADD]
         | AIndex(acc, e)  -> failwith "CA: array indexing not supported yet" 
         | ADeref e        -> failwith "CA: pointer dereferencing not supported yet"
 
@@ -135,12 +142,14 @@ module CodeGeneration =
                                   do' vEnv fEnv sl (GC (alts))
 
     let rec compileFunc vEnv fEnv = function
-         | VarDec (_, _)             -> []
-         | FunDec (_, label, _, stm) -> [Label label] @ 
-                                        CS vEnv fEnv stm
+         | VarDec (_, _)         -> []
+         | FunDec (_, s, _, stm) -> let (label, _, p) = lookupFun fEnv s
+                                    let localfEnv = addLocVars vEnv p
+                                    [Label label] @
+                                    CS localfEnv fEnv stm @
+                                    [RET (List.length p - 1)]
     and compileFuncs vEnv fEnv decs = List.collect (compileFunc vEnv fEnv) decs
                           
-    
     (* ------------------------------------------------------------------- *)
     
     (* Build environments for global variables and functions *)
@@ -156,7 +165,7 @@ module CodeGeneration =
                             | VarDec (typ, var)        -> let (vEnv1, code1) = allocate GloVar (typ, var) vEnv
                                                           let (vEnv2, fEnv2, code2) = addv decr vEnv1 fEnv
                                                           (vEnv2, fEnv2, code1 @ code2)
-                            | FunDec (tyOpt, f, xs, _) -> addv decr vEnv (fEnv.Add(f, (newLabel(), tyOpt, List.map decv xs)))
+                            | FunDec (tyOpt, f, xs, _) -> addv decr vEnv (Map.add f ((newLabel(), tyOpt, List.map decv xs)) fEnv)
         addv decs (Map.empty, 0) Map.empty
 
 
