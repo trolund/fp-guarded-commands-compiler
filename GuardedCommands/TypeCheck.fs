@@ -77,12 +77,13 @@ module TypeCheck =
                            // Make new type-environment
                            //    Include every parameter
                            //    Include function itself
-                           let ltenv' = Map.add f t (List.fold tcGDec Map.empty decs)
+                           let ltenv' = List.fold tcGDec Map.empty decs
                            // Check every return statement has type t
                            // Check stm is well-typed
-                           if not (tcFunDecBod gtenv ltenv' t stm)
+                           let gtenv' = Map.add f (FTyp((List.choose (function VarDec(t,_) -> Some(t) | _ -> None)) decs,Some(t))) gtenv
+                           if not (tcFunDecBod gtenv' ltenv' t stm)
                            then failwith "type check: function body missing return statement"
-                           Map.add f t gtenv
+                           gtenv'
                       | FunDec(None, f, decs, stm) -> failwith "type check: procedure declarations not yet supported"
    and tcFunDecBod gtenv ltenv t = function
       | Block(decs, stmts) -> let ltenv' = tcLDecs (ltenv) decs
