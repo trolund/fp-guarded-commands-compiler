@@ -1,7 +1,7 @@
 begin 
    y : int,
-   function f(x: int) : int = {
-      return x + y
+   function f(x : int) : int = {
+      return x
    };
    y := 2
 end

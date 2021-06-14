@@ -20,6 +20,14 @@ module CodeGeneration =
     type ParamDecs = (Typ * string) list
     type funEnv = Map<string, label * Typ option * ParamDecs>
 
+    (* Bind declared parameters in env: *)
+    let addLocVar vEnv (t, s) = let (vEnv', fdepth) = vEnv
+                                ((Map.add s (LocVar fdepth, t) vEnv'), fdepth + 1)
+
+    let addLocVars vEnv p : varEnv = let (vEnv', fdepth) = vEnv
+                                     List.fold addLocVar (vEnv', fdepth) p
+
+
     (* Bind declared variable in env and generate code to allocate it: *)   
     let allocate (kind : int -> Var) (typ, x) (vEnv : varEnv) =
         let (env, fdepth) = vEnv 
@@ -119,13 +127,9 @@ module CodeGeneration =
                                   do' vEnv fEnv sl (GC (alts))
 
     let rec compileFunc vEnv fEnv = function
-         | VarDec (_, s)            -> []
-         | FunDec (_, s, _, stm)    -> let label = match Map.tryFind s fEnv with
-                                                   | Some (label', _, _) -> label'
-                                                   | None                -> failwith ("compileFunc: Could not find function label '" + s + "'")
-                                       [GOTO label] @
-                                       // compileFuncs vEnv fEnv decs @ this should never happen
-                                       CS vEnv fEnv stm
+         | VarDec (_, _)             -> []
+         | FunDec (_, label, _, stm) -> [Label label] @ 
+                                        CS vEnv fEnv stm
     and compileFuncs vEnv fEnv decs = List.collect (compileFunc vEnv fEnv) decs
                           
     
