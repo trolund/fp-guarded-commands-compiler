@@ -119,6 +119,10 @@ module CodeGeneration =
                              [Label startLabel] @
                              do' vEnv fEnv startLabel gc                       
         | Block([], stms) -> CSs vEnv fEnv stms
+        | Call (f, es)    -> let (label, _, p) = lookupFun fEnv f
+                             let pLen = List.length p
+                             CEs vEnv fEnv es @
+                             [CALL (pLen, label)]
         | _               -> failwith "CS: this statement is not supported yet"
     and CSs vEnv fEnv stms = List.collect (CS vEnv fEnv) stms 
 
