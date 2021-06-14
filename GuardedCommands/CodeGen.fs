@@ -20,6 +20,15 @@ module CodeGeneration =
     type ParamDecs = (Typ * string) list
     type funEnv = Map<string, label * Typ option * ParamDecs>
 
+    let lookupFun fEnv s = 
+                match Map.tryFind s fEnv with 
+                | None    -> failwith (s + " not found.")
+                | Some(x) -> x 
+
+    let lookupVar vEnv s = 
+                let (env, _) = vEnv
+                lookup env s
+
     (* Bind declared variable in env and generate code to allocate it: *)   
     let allocate (kind : int -> Var) (typ, x) (vEnv : varEnv) =
         let (env, fdepth) = vEnv 
