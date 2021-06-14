@@ -96,6 +96,7 @@ module TypeCheck =
                   then failwith "type check: illtyped boolean expression in guarded command"
                   List.iter (fun (_,sl) -> List.iter (tcS gtenv ltenv) sl) l
    and tcGDec gtenv = function  
+                      | VarDec(ATyp(t,i),_) when not(t=ITyp || t=BTyp) || i = None || Option.get(i) < 1 -> failwith "type check: illtyped array declaration"
                       | VarDec(t,s)               -> Map.add s t gtenv
                       | FunDec(Some(t),f, decs, stm) ->
                            // Parameters should be different
@@ -105,25 +106,29 @@ module TypeCheck =
                            // Make new type-environment
                            //    Include every parameter
                            //    Include function itself
-                           let ltenv' = List.fold tcGDec Map.empty decs
+                           let ltenv' = List.fold tcFunDec Map.empty decs
                            let gtenv' = Map.add f (FTyp((List.choose (function VarDec(t,_) -> Some(t) | _ -> None)) decs,Some(t))) gtenv
                            // Check every return statement has type t
                            // Check stm is well-typed
-                           if not (tcFunDecBod gtenv' ltenv' t stm)
+                           if not (tcFunBod gtenv' ltenv' t stm)
                            then failwith "type check: function body missing return statement"
                            gtenv'
                       | FunDec(None, f, decs, stm) -> failwith "type check: procedure declarations not yet supported"
-   and tcFunDecBod gtenv ltenv t = function
+   and tcFunDec ltenv = function
+      | VarDec(ATyp(t,i),_) when not(t=ITyp || t=BTyp) || i <> None -> failwith "type check: faulty array declaration in function parameter"
+      | VarDec(t,s) -> Map.add s t ltenv
+      | _ -> failwith "type check: faulty parameter in function declaration"
+   and tcFunBod gtenv ltenv t = function
       | Block(decs, stmts) -> let ltenv' = tcLDecs (ltenv) decs
-                              List.fold (fun seen stmt -> tcFunDec gtenv ltenv' t stmt || seen) false stmts
-      | stm -> tcFunDec gtenv ltenv t stm
-   and tcFunDec gtenv ltenv t = function
+                              List.fold (fun seen stmt -> tcFunStm gtenv ltenv' t stmt || seen) false stmts
+      | stm -> tcFunStm gtenv ltenv t stm
+   and tcFunStm gtenv ltenv t = function
                                 | Return(Some(t')) when t=(tcE gtenv ltenv t') -> true
                                 | Return(_) -> failwith "type check: return type mismatch"
                                 | Do(GC(l)) | Alt(GC(l)) ->
                                                         if List.exists (fun (e,_) -> tcE gtenv ltenv e <> BTyp) l
                                                         then failwith "type check: illtyped boolean expression in guarded command"
-                                                        List.fold (fun seen (_,stml) -> List.fold (fun seen' stmt -> tcFunDec gtenv ltenv t stmt || seen') false stml || seen ) false l
+                                                        List.fold (fun seen (_,stml) -> List.fold (fun seen' stmt -> tcFunStm gtenv ltenv t stmt || seen') false stml || seen ) false l
                                 | s -> tcS gtenv ltenv s
                                        false
    and tcGDecs gtenv = function

@@ -1,0 +1,5 @@
+begin 
+   x: int,
+   y: int[1],
+   z: int[5];
+end
