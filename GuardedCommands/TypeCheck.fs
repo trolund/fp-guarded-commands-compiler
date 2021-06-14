@@ -55,33 +55,46 @@ module TypeCheck =
                          | PrintLn e -> ignore(tcE gtenv ltenv e)
                          | Ass(acc,e) -> if tcA gtenv ltenv acc = tcE gtenv ltenv e 
                                          then ()
-                                         else failwith "illtyped assignment"
-                         // TODO: Return                                
+                                         else failwith "illtyped assignment"                          
                          | Alt gc -> tcGC gtenv ltenv gc
                          | Do gc -> tcGC gtenv ltenv gc
                          | Block([],stms) -> List.iter (tcS gtenv ltenv) stms
-                         | Block(decs, stms) -> let gtenvCopy = Map.fold (fun acc key value -> Map.add key value acc) Map.empty gtenv   //Copy gtenv
-                                                let ltenv = tcLDecs (gtenvCopy) decs                                                    //Merge global variables with the new local declaration
-                                                List.iter(tcS gtenvCopy ltenv) stms
                          // TODO: Call
                          | _              -> failwith "tcS: this statement is not supported yet"
    and tcGC gtenv ltenv = function
       | GC(l) -> 
                   if List.exists (fun (e,_) -> tcE gtenv ltenv e <> BTyp) l
-                  then failwith "illtyped boolean expression in guarded command"
+                  then failwith "type check: illtyped boolean expression in guarded command"
                   List.iter (fun (_,sl) -> List.iter (tcS gtenv ltenv) sl) l
    and tcGDec gtenv = function  
                       | VarDec(t,s)               -> Map.add s t gtenv
                       | FunDec(Some(t),f, decs, stm) ->
                            // Parameters should be different
+                           let paramTest = List.distinctBy (function VarDec(t,s) -> s | _ -> failwith "tcS parameter fail") decs
+                           if List.length paramTest <> List.length decs
+                           then failwith "tcDec parameters should be distinct"
                            // Make new type-environment
                            //    Include every parameter
                            //    Include function itself
+                           let ltenv' = Map.add f t (List.fold tcGDec Map.empty decs)
                            // Check every return statement has type t
                            // Check stm is well-typed
-                           failwith "type check: function declaration"
+                           if not (tcFunDec gtenv ltenv' t stm)
+                           then failwith "type check: function body missing return statement"
+                           Map.add f t gtenv
                       | FunDec(None, f, decs, stm) -> failwith "type check: procedure declarations not yet supported"
 
+   and tcFunDec gtenv ltenv t = function
+                                | Return(Some(t')) when t=(tcE gtenv ltenv t') -> true
+                                | Return(_) -> failwith "type check: return type mismatch"
+                                | Block(decs, stmts) -> let ltenv' = tcLDecs (ltenv) decs
+                                                        List.fold (fun seen stmt -> tcFunDec gtenv ltenv' t stmt || seen) false stmts
+                                | Do(GC(l)) | Alt(GC(l)) ->
+                                                        if List.exists (fun (e,_) -> tcE gtenv ltenv e <> BTyp) l
+                                                        then failwith "type check: illtyped boolean expression in guarded command"
+                                                        List.fold (fun seen (_,stml) -> List.fold (fun seen' stmt -> tcFunDec gtenv ltenv t stmt || seen') false stml || seen ) false l
+                                | s -> tcS gtenv ltenv s
+                                       false
    and tcGDecs gtenv = function
                        | dec::decs -> tcGDecs (tcGDec gtenv dec) decs
                        | _         -> gtenv
