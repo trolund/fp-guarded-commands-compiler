@@ -40,7 +40,7 @@ let _ = go testAndTree;;
 
 let _ = goTrace testAndTree;;
 
-let _ = exec "test_5/tc_arrayIndexAss.gc";;
+let _ = exec "test_5/tc_arrayIndex.gc";;
 
 
 
