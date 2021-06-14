@@ -17,7 +17,7 @@ module TypeCheck =
 
          | Apply(f,[e1;e2]) when List.exists (fun x ->  x=f) ["+"; "-"; "*"; "/"; "%";"="; "<="; ">="; "<>"; "<"; ">"; "&&"; "||"]        
                             -> tcDyadic gtenv ltenv f e1 e2   
-
+         //| Apply(f, es)     -> failwith "function application not supported yet"
          | _                -> failwith "tcE: not supported yet"
 
    and tcMonadic gtenv ltenv f e = match (f, tcE gtenv ltenv e) with
@@ -59,6 +59,7 @@ module TypeCheck =
                          | Alt gc -> tcGC gtenv ltenv gc
                          | Do gc -> tcGC gtenv ltenv gc
                          | Block([],stms) -> List.iter (tcS gtenv ltenv) stms
+                         | Call(name, exps)  -> failwith "function call not supported yet"
                          // TODO: Call
                          | _              -> failwith "tcS: this statement is not supported yet"
    and tcGC gtenv ltenv = function
