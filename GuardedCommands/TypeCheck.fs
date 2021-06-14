@@ -103,7 +103,7 @@ module TypeCheck =
    and tcGDec gtenv = function  
                       | VarDec(ATyp(t,i),_) when not(t=ITyp || t=BTyp) || i = None || Option.get(i) < 1 -> failwith "type check: illtyped array declaration"
                       | VarDec(t,s)               -> Map.add s t gtenv
-                      | FunDec(Some(t),f, decs, stm) ->
+                      | FunDec(t,f, decs, stm) ->
                            // Parameters should be different
                            let paramTest = List.distinctBy (function VarDec(t,s) -> s | _ -> failwith "tcS parameter fail") decs
                            if List.length paramTest <> List.length decs
@@ -112,13 +112,12 @@ module TypeCheck =
                            //    Include every parameter
                            //    Include function itself
                            let ltenv' = List.fold tcFunDec Map.empty decs
-                           let gtenv' = Map.add f (FTyp((List.choose (function VarDec(t,_) -> Some(t) | _ -> None)) decs,Some(t))) gtenv
+                           let gtenv' = Map.add f (FTyp((List.choose (function VarDec(t',_) -> Some(t') | _ -> None)) decs,t)) gtenv
                            // Check every return statement has type t
                            // Check stm is well-typed
-                           if not (tcFunBod gtenv' ltenv' t stm)
+                           if not (tcFunBod gtenv' ltenv' t stm) && t <> None
                            then failwith "type check: function body missing return statement"
                            gtenv'
-                      | FunDec(None, f, decs, stm) -> failwith "type check: procedure declarations not yet supported"
    and tcFunDec ltenv = function
       | VarDec(ATyp(t,i),_) when not(t=ITyp || t=BTyp) || i <> None -> failwith "type check: faulty array declaration in function parameter"
       | VarDec(t,s) -> Map.add s t ltenv
@@ -128,7 +127,8 @@ module TypeCheck =
                               List.fold (fun seen stmt -> tcFunStm gtenv ltenv' t stmt || seen) false stmts
       | stm -> tcFunStm gtenv ltenv t stm
    and tcFunStm gtenv ltenv t = function
-                                | Return(Some(t')) when t=(tcE gtenv ltenv t') -> true
+                                | Return(Some(t')) when t<> None && Option.get(t)=(tcE gtenv ltenv t') -> true
+                                | Return(None) when t=None -> true
                                 | Return(_) -> failwith "type check: return type mismatch"
                                 | Do(GC(l)) | Alt(GC(l)) ->
                                                         if List.exists (fun (e,_) -> tcE gtenv ltenv e <> BTyp) l
