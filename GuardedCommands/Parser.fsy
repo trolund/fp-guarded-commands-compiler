@@ -27,7 +27,7 @@ open GuardedCommands.Frontend.AST
 
 %start Main Prog 
 %type <Exp> Exp
-%type <Exp list> ExpL
+%type <Exp list> ExpL ExpList
 %type <Access> Access
 %type <Access list> AccessL
 %type <(Exp * Stm list) list> GCList
@@ -136,6 +136,10 @@ ExpL2:
   | Exp COMMA Exp                     { [$1;$3] }
   | Exp COMMA ExpL2                   { $1 :: $3 }
 
-ExpL: 
+ExpL:
+                                      { [] }
+   | ExpList                          { $1 }
+
+ExpList: 
    | Exp                              { [$1] }
    | Exp COMMA ExpL                   { $1 :: $3 }
