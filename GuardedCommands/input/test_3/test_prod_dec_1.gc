@@ -1,6 +1,6 @@
 begin 
    x : int,
-   function f() = { 
-       x := 5;
+   procedure f() = { 
+       x := 5
    };
 end
