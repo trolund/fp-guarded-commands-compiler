@@ -10,3 +10,7 @@ GuardedCommands/Parser.fsyacc.output
 .DS_Store
 GuardedCommands/.vscode/settings.json
 GuardedCommands/.vs/
+GuardedCommands/PostScriptGenerator/obj/
+GuardedCommands/PostScriptGenerator/bin/
+GuardedCommands/TreeManager/obj/
+GuardedCommands/TreeManager/bin/
