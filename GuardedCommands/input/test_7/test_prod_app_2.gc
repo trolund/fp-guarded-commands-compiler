@@ -5,4 +5,6 @@ begin
       print p;
       return
    };
+   f(5, 10, false);
+   print z
 end

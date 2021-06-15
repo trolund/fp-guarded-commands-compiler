@@ -37,6 +37,7 @@ module CodeGeneration =
                 match Map.tryFind s vEnv' with 
                 | None    -> failwith ("lookup: " + s + " not found.")
                 | Some(x) -> x 
+                
 
     (* Bind declared variable in env and generate code to allocate it: *)   
     let allocate (kind : int -> Var) (typ, x) vEnv =
@@ -47,6 +48,8 @@ module CodeGeneration =
                               (newEnv, [INCSP i; GETSP; CSTI (i - 1); SUB]) // failwith "allocate: array not supported yet"
         | _                -> let newEnv = (Map.add x (kind fdepth, typ) env, fdepth + 1)
                               (newEnv, [INCSP 1])
+
+
 
     /// CE vEnv fEnv e gives the code for an expression e on the basis of a variable and a function environment
     let rec CE (vEnv : varEnv) fEnv = function
@@ -90,12 +93,15 @@ module CodeGeneration =
                                                        [CSTI 0] @ [GOTO labend] @ [Label labtrue] @ [CSTI 1] @ [Label labend]
                                              | _    -> failwith "CE: this case is not possible"
                                    CE vEnv fEnv e1 @ CE vEnv fEnv e2 @ ins
-        | Apply(f, es) -> let (label, _, p) = lookupFun fEnv f
-                          let pLen = List.length p
-                          CEs vEnv fEnv es @
-                          [CALL (pLen, label)]
+        | Apply(f, es) -> call vEnv fEnv f es
         | _            -> failwith "CE: not supported yet"
-    and CEs vEnv fEnv es = List.collect (CE vEnv fEnv) es
+    and CEs vEnv fEnv es = 
+        List.collect (CE vEnv fEnv) es
+     
+    and call vEnv fEnv f es = let (label, _, p) = lookupFun fEnv f
+                              let pLen = List.length p
+                              CEs vEnv fEnv es @
+                              [CALL (pLen, label)]
 
     /// CA vEnv fEnv acc gives the code for an access acc on the basis of a variable and a function environment
     and CA vEnv fEnv = function 
@@ -128,11 +134,7 @@ module CodeGeneration =
                                code @
                                CSs vEnv' fEnv stms @
                                [INCSP -(List.length decs - 1)]
-        | Call (f, es)      -> let (label, _, p) = lookupFun fEnv f
-                               let pLen = List.length p
-                               CEs vEnv fEnv es @
-                               [CALL (pLen, label)]
-        | _                 -> failwith "CS: not supported yet"
+        | Call (f, es)      -> call vEnv fEnv f es
     and CSs vEnv fEnv stms = List.collect (CS vEnv fEnv) stms 
 
     and alt' vEnv fEnv el = function
@@ -173,7 +175,7 @@ module CodeGeneration =
                                     [RET (List.length p - 1)]
     and compileFuncs vEnv fEnv decs = 
         List.collect (compileFunc vEnv fEnv) decs
-                          
+
     (* ------------------------------------------------------------------- *)
     
     (* Build environments for global variables and functions *)

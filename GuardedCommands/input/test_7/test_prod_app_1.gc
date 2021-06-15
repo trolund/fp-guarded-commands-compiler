@@ -1,0 +1,8 @@
+begin 
+   x : int,
+   procedure f() = { 
+       x := 5
+   };
+   f();
+   print x
+end
