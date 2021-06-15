@@ -8,7 +8,7 @@ open GuardedCommands.Frontend.AST
 %token <string> NAME
 %token ITYP BTYP
 %token LP LCP LSP RP RCP RSP
-%token IF FI DO OD BEGIN END FUN
+%token IF FI DO OD BEGIN END FUN PROC
 %token COMMA COLON SEMI BAR TO
 %token NEG PLUS MINUS TIMES DIV MOD AND OR EQ LE LT GE GT NEQ
 %token PRINT ASG SKIP ABORT RET
@@ -55,6 +55,7 @@ Typ:
 Dec: 
     NAME COLON Typ { VarDec($3,$1) }
     | FUN NAME LP DecL RP COLON Typ EQ Stm { FunDec(Some($7),$2,$4,$9) }
+    | PROC NAME LP DecL RP EQ Stm          { FunDec(None,$2,$4,$7) }
 
 DecL: 
                                       { [] }
