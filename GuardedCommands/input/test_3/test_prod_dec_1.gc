@@ -1,0 +1,6 @@
+begin 
+   x : int,
+   function f() = { 
+       x := 5;
+   };
+end

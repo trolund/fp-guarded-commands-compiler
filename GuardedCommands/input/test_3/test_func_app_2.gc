@@ -1,0 +1,8 @@
+begin 
+   y : int,
+   function f(x : int) : int = {
+      return x
+   };
+   y := 234;
+   print f(y)
+end
