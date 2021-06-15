@@ -11,8 +11,8 @@ module TypeCheck =
    let rec compareTypes xl yl =
       match xl, yl with 
       | [], []       -> true
-      | [], y::ys    -> false
-      | x::xs, []    -> false
+      | [], _        -> false
+      | _, []        -> false
       | x::xs, y::ys -> x = y && compareTypes xs ys
 
 /// tcE gtenv ltenv e gives the type for expression e on the basis of type environments gtenv and ltenv
@@ -99,6 +99,7 @@ module TypeCheck =
                   List.iter (fun (_,sl) -> List.iter (tcS gtenv ltenv) sl) l
    and tcGDec gtenv = function  
                       | VarDec(ATyp(t,i),_) when not(t=ITyp || t=BTyp) || i = None || Option.get(i) < 1 -> failwith "type check: illtyped array declaration"
+                      | VarDec(PTyp(x), s)        -> failwith "Pointer declaration not supported yet"
                       | VarDec(t,s)               -> Map.add s t gtenv
                       | FunDec(t,f, decs, stm) ->
                            // Parameters should be different
