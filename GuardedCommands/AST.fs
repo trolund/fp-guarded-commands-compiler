@@ -21,6 +21,7 @@ module AST =
 
    type Stm  =                            
           | PrintLn of Exp               (* Print                          *) 
+          | MultiAss of Access list * Exp list //Type for handling multi assignment
           | Ass of Access * Exp          (* x:=e  or  p^:=e  or  a[e]:=e   *)
           | Return of Exp option         (* Return from function           *)   
           | Alt of GuardedCommand        (* Alternative statement          *) 

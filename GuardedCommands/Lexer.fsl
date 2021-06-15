@@ -67,7 +67,9 @@ rule tokenize =
   | "%"         { MOD   }
   | "-"         { MINUS }
   | "="         { EQ    }
-  | "+"         { PLUS  }   
+  | "+"         { PLUS  }  
+  | "&"         { AOF } 
+  | "^"         { DREF }
   | identifier  { keyword(Encoding.UTF8.GetString(lexbuf.Lexeme)) }
   | eof         { EOF   }
 

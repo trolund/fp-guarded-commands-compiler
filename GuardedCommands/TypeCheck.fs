@@ -11,8 +11,8 @@ module TypeCheck =
    let rec compareTypes xl yl =
       match xl, yl with 
       | [], []       -> true
-      | [], y::ys    -> false
-      | x::xs, []    -> false
+      | [], _        -> false
+      | _, []        -> false
       | x::xs, y::ys -> x = y && compareTypes xs ys
 
 /// tcE gtenv ltenv e gives the type for expression e on the basis of type environments gtenv and ltenv
@@ -49,16 +49,11 @@ module TypeCheck =
                                          match fType with
                                           | FTyp(tl, Some(t)) -> if not (compareTypes tl expList) then failwith "Invalid argument types"
                                                                  else t
-                                          | _                 -> failwith "invalid function application type" 
-   and tcNaryProcedure gtenv ltenv f es = let fType = Option.get(Map.tryFind f gtenv)
-                                          //Convert expression list to type list
-                                          let expList = List.rev (List.fold (fun acc e -> tcE gtenv ltenv e::acc) [] es)
-                                          
-                                          //Return function type (i.e. return type) if the expression list' type matches the declaration type
-                                          match fType with
-                                          | FTyp(tl, None) -> if not (compareTypes tl expList) then failwith "Invalid argument types"
-                                                              else ()
-                                          | _              -> failwith "invalid procedure application type" 
+                                          | _                 -> failwith "invalid function application type"
+   
+   //failwith "type check: functions not supported yet"
+ 
+   and tcNaryProcedure gtenv ltenv f es = failwith "type check: procedures not supported yet"
       
 
 /// tcA gtenv ltenv e gives the type for access acc on the basis of type environments gtenv and ltenv
@@ -90,7 +85,17 @@ module TypeCheck =
                          | Do gc -> tcGC gtenv ltenv gc
                          | Block([],stms) -> List.iter (tcS gtenv ltenv) stms
                          | Block(_, _)    -> failwith "Local declaration has to be assigned to a function/procedure declaration"
-                         | Call(name, exps)  -> tcNaryProcedure gtenv ltenv name exps
+                         | Call(name, exps)  -> failwith "procedure not defined"
+                                                //match fType with
+                                                //   | None    -> failwith "function/procedure not defined"
+                                                //   | Some(FTyp(tl, None))    -> ()
+                                                //   | Some(FTyp(tl, Some(t))) -> let expList = List.rev (List.fold (fun acc e -> tcE gtenv ltenv e::acc) [] exps)
+                                                //                                if compareTypes tl expList //Match element by element if they have the same type
+                                                //                                then ()
+                         // TODO: Call
+                         | MultiAss(accl, expl) -> failwith "Multiassign not implemented yet"
+                                                   //if List.forall (fun v -> Map.containsKey v gtenv) accl then ()
+                                                   //else failwith "Cannot assign to undefined variable"
                          | _              -> failwith "tcS: this statement is not supported yet"
    and tcGC gtenv ltenv = function
       | GC(l) -> 
@@ -99,6 +104,7 @@ module TypeCheck =
                   List.iter (fun (_,sl) -> List.iter (tcS gtenv ltenv) sl) l
    and tcGDec gtenv = function  
                       | VarDec(ATyp(t,i),_) when not(t=ITyp || t=BTyp) || i = None || Option.get(i) < 1 -> failwith "type check: illtyped array declaration"
+                      | VarDec(PTyp(x), s)        -> failwith "Pointer declaration not supported yet"
                       | VarDec(t,s)               -> Map.add s t gtenv
                       | FunDec(t,f, decs, stm) ->
                            // Parameters should be different

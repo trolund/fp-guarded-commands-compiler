@@ -30,7 +30,15 @@ System.IO.Directory.SetCurrentDirectory __SOURCE_DIRECTORY__;;
 
 // Basic tets ///////////////////////////////
 
+<<<<<<< Updated upstream
 let testAndTree = parseFromFile "test_5/tc_arrayIndexAss.gc";;
+=======
+
+let testAndTree = parseFromFile "test_6/tc_simpleCase.gc";;
+
+//let testAndTree = parseFromFile "par1.gc";;
+
+>>>>>>> Stashed changes
 
 let _ = tcP testAndTree;;
 
