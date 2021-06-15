@@ -161,7 +161,7 @@ module CodeGenerationOpt =
        match stm with
        | PrintLn e        -> CE e vEnv fEnv (PRINTI:: INCSP -1 :: k) 
 
-       | Ass(acc,e)       -> CA acc vEnv fEnv (CE e vEnv fEnv (STI:: addINCSP -1 k))
+       | Ass(acc,e)       -> List.collect (fun (a',e') -> CA a' vEnv fEnv (CE e' vEnv fEnv (STI:: addINCSP -1 k))) (List.zip acc e)
 
        | Block([],stms)   -> CSs stms vEnv fEnv k
 
