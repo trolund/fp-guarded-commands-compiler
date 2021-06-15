@@ -14,12 +14,16 @@
 #load "CodeGenOpt.fs"
 #load "VirtualMachine.fs"
 #load "Util.fs"
+// #load "./TreeManager/Library.fs"
+// #load "./PostScriptGenerator/Library.fs"
 
 
 open GuardedCommands.Util
 open GuardedCommands.Frontend.TypeCheck
 open GuardedCommands.Frontend.AST
 open GuardedCommands.Backend.CodeGeneration
+// open PostScriptGenerator.Generator
+// open Tree.TreeManager
 
 open ParserUtil
 open CompilerUtil
@@ -30,7 +34,7 @@ System.IO.Directory.SetCurrentDirectory __SOURCE_DIRECTORY__;;
 
 // Basic tets ///////////////////////////////
 
-let testAndTree = parseFromFile "test_7/test_prod_app_4.gc";;
+let testAndTree = parseFromFile "test/A0.gc";;
 
 let _ = tcP testAndTree;;
 
@@ -42,8 +46,9 @@ let _ = goTrace testAndTree;;
 
 let _ = exec "test_4/test_func_local_dec_app_1.gc";;
 
+// tree print
 
-
+// parseProgram testAndTree |> design |> toPSfast |> writeToFile
 
 // The Ex0.gc example:
 
