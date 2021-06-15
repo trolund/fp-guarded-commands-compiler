@@ -30,7 +30,7 @@ System.IO.Directory.SetCurrentDirectory __SOURCE_DIRECTORY__;;
 
 // Basic tets ///////////////////////////////
 
-let testAndTree = parseFromFile "test_5/tc_arrayDec.gc";;
+let testAndTree = parseFromFile "test_5/tc_arrayIndexAss.gc";;
 
 let _ = tcP testAndTree;;
 
