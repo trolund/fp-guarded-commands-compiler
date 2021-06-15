@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.810.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "GuardedCommands", "GuardedCommands.fsproj", "{94A23C51-4C1B-4DEE-B396-B7A4E4F23711}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PostScriptGenerator", "PostScriptGenerator\PostScriptGenerator.fsproj", "{00181728-B2C8-4FDD-8051-FAFC407E7E78}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TreeManager", "TreeManager\TreeManager.fsproj", "{9BB62121-BEC2-453F-AB8A-CAFE40B1ECD0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{94A23C51-4C1B-4DEE-B396-B7A4E4F23711}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94A23C51-4C1B-4DEE-B396-B7A4E4F23711}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94A23C51-4C1B-4DEE-B396-B7A4E4F23711}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00181728-B2C8-4FDD-8051-FAFC407E7E78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00181728-B2C8-4FDD-8051-FAFC407E7E78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00181728-B2C8-4FDD-8051-FAFC407E7E78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00181728-B2C8-4FDD-8051-FAFC407E7E78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BB62121-BEC2-453F-AB8A-CAFE40B1ECD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BB62121-BEC2-453F-AB8A-CAFE40B1ECD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BB62121-BEC2-453F-AB8A-CAFE40B1ECD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BB62121-BEC2-453F-AB8A-CAFE40B1ECD0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
