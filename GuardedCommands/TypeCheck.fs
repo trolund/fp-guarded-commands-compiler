@@ -92,7 +92,6 @@ module TypeCheck =
                                                 //   | Some(FTyp(tl, Some(t))) -> let expList = List.rev (List.fold (fun acc e -> tcE gtenv ltenv e::acc) [] exps)
                                                 //                                if compareTypes tl expList //Match element by element if they have the same type
                                                 //                                then ()
-
                          // TODO: Call
                          | _              -> failwith "tcS: this statement is not supported yet"
    and tcGC gtenv ltenv = function
@@ -142,7 +141,7 @@ module TypeCheck =
    //Typechecking local env
    and tcLDec ltenv = function
       | VarDec(t,s)  -> Map.add s t ltenv
-      | FunDec(_)    -> failwith "function declaration not allowed in block"
+      | FunDec(_)    -> failwith "function/procedure declaration not allowed in block"
    and tcLDecs ltenv = function
       | dec::decs    -> tcLDecs (tcLDec ltenv dec) decs
       | _            -> ltenv
