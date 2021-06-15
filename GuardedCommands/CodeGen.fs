@@ -107,7 +107,7 @@ module CodeGeneration =
                              CE vEnv fEnv e @
                              [ADD] // failwith "CA: array indexing not supported yet" 
         | ADeref e        -> CE vEnv fEnv e // failwith "CA: pointer dereferencing not supported yet"
-
+    
     /// CS vEnv fEnv s gives the code for a statement s on the basis of a variable and a function environment                          
     let rec CS vEnv fEnv = function
         | PrintLn e         -> CE vEnv fEnv e @ [PRINTI; INCSP -1] 
@@ -127,11 +127,12 @@ module CodeGeneration =
         | Block(decs, stms) -> let (vEnv', code) = compileLocalDecs (vEnv, []) decs
                                code @
                                CSs vEnv' fEnv stms @
-                               [INCSP (snd vEnv - snd vEnv')]
+                               [INCSP -(List.length decs - 1)]
         | Call (f, es)      -> let (label, _, p) = lookupFun fEnv f
                                let pLen = List.length p
                                CEs vEnv fEnv es @
                                [CALL (pLen, label)]
+        | _                 -> failwith "CS: not supported yet"
     and CSs vEnv fEnv stms = List.collect (CS vEnv fEnv) stms 
 
     and alt' vEnv fEnv el = function
@@ -153,22 +154,22 @@ module CodeGeneration =
                                   [Label labnext] @
                                   do' vEnv fEnv sl (GC (alts))
 
-    and compileLocalDec (vEnv, code) = function
+    and compileLocalDec vEnv = function
          | VarDec (t, s) -> let (vEnv', code') = allocate LocVar (t, s) vEnv
-                            (vEnv', code @ code')
-         | FunDec _      -> (vEnv, code)
+                            (vEnv', code')
+         | FunDec _      -> (vEnv, [])
     and compileLocalDecs (vEnv, code) = function
          | []    -> (vEnv, code)
-         | d::ds -> let (vEnv', code') = compileLocalDec (vEnv, code) d
+         | d::ds -> let (vEnv', code') = compileLocalDec vEnv d
                     compileLocalDecs (vEnv', code @ code') ds
     
     let rec compileFunc vEnv fEnv = function
          | VarDec _              -> []
          | FunDec (_, s, _, stm) -> let vEnv' = (fst vEnv, 0)
                                     let (label, _, p) = lookupFun fEnv s
-                                    let localfEnv = addLocVars vEnv' p
+                                    let localvEnv = addLocVars vEnv' p
                                     [Label label] @
-                                    CS localfEnv fEnv stm @
+                                    CS localvEnv fEnv stm @
                                     [RET (List.length p - 1)]
     and compileFuncs vEnv fEnv decs = 
         List.collect (compileFunc vEnv fEnv) decs

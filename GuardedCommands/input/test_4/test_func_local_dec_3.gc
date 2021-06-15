@@ -1,0 +1,20 @@
+begin 
+   t : int,
+   function f(b : int, n : bool) : int = { 
+      x : int,
+      y : int,
+      z : int,
+      p : bool,
+      q : bool;
+      x := 2;
+      y := 4;
+      z := 6;
+      p := true;
+      q := false;
+
+      if p || q = true -> x := 0
+      fi;
+
+      return x + y + 0 + z + t + 10 + b
+   };
+end
