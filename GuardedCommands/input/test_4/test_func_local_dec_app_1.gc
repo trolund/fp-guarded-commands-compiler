@@ -1,0 +1,10 @@
+begin 
+   function f() : int = { 
+      x : int,
+      y : int;
+      x := 2;
+      y := 2;
+      return x + y
+   };
+   print f()
+end
