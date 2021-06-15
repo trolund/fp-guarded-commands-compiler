@@ -42,7 +42,9 @@ module CodeGeneration =
         let (env, fdepth) = vEnv 
         match typ with
         | ATyp (ATyp _, _) -> raise (Failure "allocate: array of arrays not permitted")
-        | ATyp (t, Some i) -> failwith "allocate: array not supported yet"
+        | ATyp (t, Some i) -> let newEnv = (Map.add x (kind fdepth, typ) env, fdepth + i + 1)
+                              let code = [INCSP i; GETSP; CSTI (i - 1); SUB]
+                              (newEnv, code) // failwith "allocate: array not supported yet"
         | _                -> let newEnv = (Map.add x (kind fdepth, typ) env, fdepth + 1)
                               let code = [INCSP 1]
                               (newEnv, code)
@@ -101,8 +103,9 @@ module CodeGeneration =
         | AVar x          -> match lookupVar (fst vEnv) x with
                              | (GloVar addr, _) -> [CSTI addr]
                              | (LocVar addr, _) -> [GETBP; CSTI addr; ADD]
-        | AIndex(acc, e)  -> failwith "CA: array indexing not supported yet" 
-        | ADeref e        -> failwith "CA: pointer dereferencing not supported yet"
+        | AIndex(acc, e)  -> CA vEnv fEnv acc
+                            @ [LDI] @ CE vEnv fEnv e @ [ADD] // failwith "CA: array indexing not supported yet" 
+        | ADeref e        -> CE vEnv fEnv e // failwith "CA: pointer dereferencing not supported yet"
 
     /// CS vEnv fEnv s gives the code for a statement s on the basis of a variable and a function environment                          
     let rec CS vEnv fEnv = function
