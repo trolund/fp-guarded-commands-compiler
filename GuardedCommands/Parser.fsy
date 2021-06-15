@@ -80,6 +80,7 @@ Stm:
   | DO GuardedCommand OD              { Do $2  }
   | RET Exp                           { Return(Some($2)) }
   | RET                               { Return(None) }
+  | NAME LP ExpL RP                   { Call($1, $3) }
 
 
 StmL:

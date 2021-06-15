@@ -1,0 +1,6 @@
+begin 
+   procedure f(x: int) = { 
+      print x + 2;
+   };
+   f(true)
+end

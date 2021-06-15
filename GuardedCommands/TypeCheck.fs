@@ -49,11 +49,16 @@ module TypeCheck =
                                          match fType with
                                           | FTyp(tl, Some(t)) -> if not (compareTypes tl expList) then failwith "Invalid argument types"
                                                                  else t
-                                          | _                 -> failwith "invalid function application type"
-   
-   //failwith "type check: functions not supported yet"
- 
-   and tcNaryProcedure gtenv ltenv f es = failwith "type check: procedures not supported yet"
+                                          | _                 -> failwith "invalid function application type" 
+   and tcNaryProcedure gtenv ltenv f es = let fType = Option.get(Map.tryFind f gtenv)
+                                          //Convert expression list to type list
+                                          let expList = List.rev (List.fold (fun acc e -> tcE gtenv ltenv e::acc) [] es)
+                                          
+                                          //Return function type (i.e. return type) if the expression list' type matches the declaration type
+                                          match fType with
+                                          | FTyp(tl, None) -> if not (compareTypes tl expList) then failwith "Invalid argument types"
+                                                              else ()
+                                          | _              -> failwith "invalid procedure application type" 
       
 
 /// tcA gtenv ltenv e gives the type for access acc on the basis of type environments gtenv and ltenv
@@ -85,14 +90,7 @@ module TypeCheck =
                          | Do gc -> tcGC gtenv ltenv gc
                          | Block([],stms) -> List.iter (tcS gtenv ltenv) stms
                          | Block(_, _)    -> failwith "Local declaration has to be assigned to a function/procedure declaration"
-                         | Call(name, exps)  -> failwith "procedure not defined"
-                                                //match fType with
-                                                //   | None    -> failwith "function/procedure not defined"
-                                                //   | Some(FTyp(tl, None))    -> ()
-                                                //   | Some(FTyp(tl, Some(t))) -> let expList = List.rev (List.fold (fun acc e -> tcE gtenv ltenv e::acc) [] exps)
-                                                //                                if compareTypes tl expList //Match element by element if they have the same type
-                                                //                                then ()
-                         // TODO: Call
+                         | Call(name, exps)  -> tcNaryProcedure gtenv ltenv name exps
                          | _              -> failwith "tcS: this statement is not supported yet"
    and tcGC gtenv ltenv = function
       | GC(l) -> 

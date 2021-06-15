@@ -1,0 +1,11 @@
+begin 
+   y : int,
+   procedure f(x: int) = { 
+      print x + 2
+   },
+   procedure g(x: int) = {
+      print x + 2;
+      return
+   };
+   g(2)
+end
