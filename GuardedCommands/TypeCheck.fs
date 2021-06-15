@@ -68,15 +68,21 @@ module TypeCheck =
          | AVar x         -> match Map.tryFind x ltenv with
                              | None   -> match Map.tryFind x gtenv with
                                          | None   -> failwith ("no declaration for : " + x)
-                                         | Some t -> t
-                             | Some t -> t            
+                                         | Some t -> match t with 
+                                                         | PTyp(x)   -> x
+                                                         | _         -> t
+                             | Some t -> match t with 
+                                             | PTyp(x)   -> x
+                                             | _         -> t        
          | AIndex(acc, e) ->
                            if (tcE gtenv ltenv e) <> ITyp
                            then failwith "tcA: adressing using non-integer expression"
                            match tcA gtenv ltenv acc with
                               ATyp(t',_) -> t'
                               | _ -> failwith "tcA: adressing non-array variable"
-         | ADeref e       -> failwith "tcA: pointer dereferencing not supported yes"
+         | ADeref e       ->  let t = tcE gtenv ltenv e
+                              if t = ITyp || t = BTyp then t else 
+                              failwith "tcA: pointer dereferencing not supported yes"
  
 
 /// tcS gtenv ltenv s checks the well-typeness of a statement s on the basis of type environments gtenv and ltenv
@@ -99,7 +105,8 @@ module TypeCheck =
                   List.iter (fun (_,sl) -> List.iter (tcS gtenv ltenv) sl) l
    and tcGDec gtenv = function  
                       | VarDec(ATyp(t,i),_) when not(t=ITyp || t=BTyp) || i = None || Option.get(i) < 1 -> failwith "type check: illtyped array declaration"
-                      | VarDec(PTyp(x), s)        -> failwith "Pointer declaration not supported yet"
+                      | VarDec(PTyp(t), s)        -> if not (t = ITyp || t = BTyp) then failwith "illtyped pointer"
+                                                     else Map.add s (PTyp(t)) gtenv
                       | VarDec(t,s)               -> Map.add s t gtenv
                       | FunDec(t,f, decs, stm) ->
                            // Parameters should be different
