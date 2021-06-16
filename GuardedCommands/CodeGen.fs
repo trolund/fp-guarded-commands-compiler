@@ -105,11 +105,11 @@ module CodeGeneration =
                              CE vEnv fEnv e @
                              [ADD] // failwith "CA: array indexing not supported yet" 
         | ADeref e        -> CE vEnv fEnv e // failwith "CA: pointer dereferencing not supported yet"
-    
+    and CAs vEnv fEnv accs = List.collect (CA vEnv fEnv) accs
     /// CS vEnv fEnv s gives the code for a statement s on the basis of a variable and a function environment                          
     let rec CS vEnv fEnv = function
         | PrintLn e         -> CE vEnv fEnv e @ [PRINTI; INCSP -1] 
-        | Ass(acc, e)     -> List.collect (fun (a',e') -> CA vEnv fEnv a' @ CE vEnv fEnv e' @ [STI; INCSP -1]) (List.zip acc e) // TODO
+        | Ass(acc, e)       -> CAs vEnv fEnv acc @ CEs vEnv fEnv e @ [STI] // List.collect (fun (a',e') -> CA vEnv fEnv a' @ CE vEnv fEnv e' @ [STI; INCSP -1]) (List.zip acc e) TODO
         | Return(o)         -> match o with   
                                | Some(v) -> CE vEnv fEnv v @
                                             [RET (snd vEnv)]
