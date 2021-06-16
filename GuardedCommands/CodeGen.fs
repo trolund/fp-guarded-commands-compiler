@@ -80,17 +80,9 @@ module CodeGeneration =
                                              | "%"  -> [MOD]
                                              | "="  -> [EQ]
                                              | "<"  -> [LT]
-                                             | ">"  -> [SWAP; SUB; CSTI 0; LT]
-                                             | "<=" -> let labend = newLabel()
-                                                       let labtrue = newLabel()
-                                                       [LT] @ [IFNZRO labtrue] @
-                                                       CE vEnv fEnv e1 @ CE vEnv fEnv e2 @ [EQ] @ [IFNZRO labtrue] @
-                                                       [CSTI 0] @ [GOTO labend] @ [Label labtrue] @ [CSTI 1] @ [Label labend]
-                                             | ">=" -> let labend = newLabel()
-                                                       let labtrue = newLabel()
-                                                       [SWAP; DIV; CSTI 0; EQ] @ [IFNZRO labtrue] @
-                                                       CE vEnv fEnv e1 @ CE vEnv fEnv e2 @ [EQ] @ [IFNZRO labtrue] @
-                                                       [CSTI 0] @ [GOTO labend] @ [Label labtrue] @ [CSTI 1] @ [Label labend]
+                                             | ">"  -> [SWAP; LT]
+                                             | "<=" -> [SWAP; LT; NOT]
+                                             | ">=" -> [LT; NOT]
                                              | _    -> failwith "CE: this case is not possible"
                                    CE vEnv fEnv e1 @ CE vEnv fEnv e2 @ ins
         | Apply(f, es) -> call vEnv fEnv f es
@@ -117,7 +109,7 @@ module CodeGeneration =
     /// CS vEnv fEnv s gives the code for a statement s on the basis of a variable and a function environment                          
     let rec CS vEnv fEnv = function
         | PrintLn e         -> CE vEnv fEnv e @ [PRINTI; INCSP -1] 
-        | Ass(acc, e)     -> List.collect (fun (a',e') -> CA vEnv fEnv a' @ CE vEnv fEnv e' @ [STI; INCSP -1]) (List.zip acc e)
+        | Ass(acc, e)     -> List.collect (fun (a',e') -> CA vEnv fEnv a' @ CE vEnv fEnv e' @ [STI; INCSP -1]) (List.zip acc e) // TODO
         | Return(o)         -> match o with   
                                | Some(v) -> CE vEnv fEnv v @
                                             [RET (snd vEnv)]
