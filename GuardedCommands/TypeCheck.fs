@@ -27,14 +27,14 @@ module TypeCheck =
    let rec tcE gtenv ltenv = function                            
          | N _              -> ITyp   
          | B _              -> BTyp   
-         | Access acc       -> tcA gtenv ltenv acc     
-                   
+         | Access acc       -> tcA gtenv ltenv acc              
          | Apply(f,[e]) when List.exists (fun x ->  x=f) ["-"; "!"]  
                             -> tcMonadic gtenv ltenv f e        
 
          | Apply(f,[e1;e2]) when List.exists (fun x ->  x=f) ["+"; "-"; "*"; "/"; "%";"="; "<="; ">="; "<>"; "<"; ">"; "&&"; "||"]        
                             -> tcDyadic gtenv ltenv f e1 e2   
          | Apply(f, es)     -> tcNaryFunction gtenv ltenv f es
+         | Addr(acc)        -> tcA gtenv ltenv acc
          | _                -> failwith "tcE: not supported yet"
 
    and tcMonadic gtenv ltenv f e = match (f, tcE gtenv ltenv e) with
