@@ -44,7 +44,7 @@ let _ = go testAndTree;;
 
 let _ = goTrace testAndTree;;
 
-let _ = exec "test_7/test_prod_app_1.gc";;
+let _ = exec "test_6/tc_simpleCase.gc";;
 
 // tree print
 
