@@ -124,6 +124,7 @@ module CodeGeneration =
                                code @ CSs vEnv' fEnv stms @
                                [INCSP -(List.length decs - 1)]
         | Call (f, es)      -> call vEnv fEnv f es
+                               @ [INCSP -1]
     and CSs vEnv fEnv stms = List.collect (CS vEnv fEnv) stms 
 
     and alt' vEnv fEnv el = function
