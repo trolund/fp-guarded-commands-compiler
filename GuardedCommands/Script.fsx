@@ -52,7 +52,7 @@ let programToPS (fn: string) =
     let words = fn.Split [|'/'|]
     parseFromFile fn |> parseProgram |> treeToFile (words.[words.Length - 1])
 
-programToPS "test/A0.gc"
+programToPS "test_6/tc_simpleCase.gc"
 
 // The Ex0.gc example:
 
