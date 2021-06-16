@@ -4,28 +4,20 @@
 open GuardedCommands.Frontend.AST
 
 module TypeCheck = 
-
-   //Helper functions
-   let getPrimitiveType t =
-      match t with 
-      | ATyp(t', _)  -> t'
-      | PTyp(t')     -> t'
-      //| FTyp(_, t')  -> t'
-      | _            -> t
-
+   
+   let compareType a b = 
+      match a, b with
+         | PTyp(t1), PTyp(t2)       -> t1 = t2
+         | ATyp(t1, _), ATyp(t2, _) -> t1 = t2
+         | t1, t2                   -> t1 = t2
+   
    //Compare types between function declaration and function application
    let rec compareTypes xl yl =
       match xl, yl with 
       | [], []       -> true
       | [], _        -> false
       | _, []        -> false
-      | x::xs, y::ys -> (getPrimitiveType x) = (getPrimitiveType y) && compareTypes xs ys
-   
-   let compareType a b = 
-      //printfn "Type a : %A and type b : %A" a b
-      match a, b with
-         | PTyp(t1), PTyp(t2) -> t1 = t2
-         | t1, t2             -> t1 = t2
+      | x::xs, y::ys -> compareType x y && compareTypes xs ys
 
 /// tcE gtenv ltenv e gives the type for expression e on the basis of type environments gtenv and ltenv
 /// for global and local variables 
