@@ -48,7 +48,11 @@ let _ = exec "test_4/test_func_local_dec_app_1.gc";;
 
 // tree print
 
-parseFromFile "test/A0.gc" |> parseProgram |> design |> toPSfast |> writeToFile "output"
+let programToPS (fn: string) =
+    let words = fn.Split [|'/'|]
+    parseFromFile fn |> parseProgram |> treeToFile (words.[words.Length - 1])
+
+programToPS "test/A0.gc"
 
 // The Ex0.gc example:
 
