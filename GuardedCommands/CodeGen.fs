@@ -36,8 +36,7 @@ module CodeGeneration =
                 let (vEnv', _) = vEnv
                 match Map.tryFind s vEnv' with 
                 | None    -> failwith ("lookup: " + s + " not found.")
-                | Some(x) -> x 
-                
+                | Some(x) -> x             
 
     (* Bind declared variable in env and generate code to allocate it: *)   
     let allocate (kind : int -> Var) (typ, x) vEnv =
@@ -49,6 +48,10 @@ module CodeGeneration =
         | _                -> let newEnv = (Map.add x (kind fdepth, typ) env, fdepth + 1)
                               (newEnv, [INCSP 1])
 
+    let rec repeat n s acc =
+        match n with 
+        | 0 -> acc
+        | _ -> repeat (n-1) s (acc @ s) 
 
     /// CE vEnv fEnv e gives the code for an expression e on the basis of a variable and a function environment
     let rec CE (vEnv : varEnv) fEnv = function
@@ -105,7 +108,8 @@ module CodeGeneration =
     /// CS vEnv fEnv s gives the code for a statement s on the basis of a variable and a function environment                          
     let rec CS vEnv fEnv = function
         | PrintLn e         -> CE vEnv fEnv e @ [PRINTI; INCSP -1] 
-        | Ass(acc, e)       -> CAs vEnv fEnv acc @ CEs vEnv fEnv e @ [STI] // List.collect (fun (a',e') -> CA vEnv fEnv a' @ CE vEnv fEnv e' @ [STI; INCSP -1]) (List.zip acc e) TODO
+        | Ass(acc, e)       -> let n = e.Length
+                               CEs vEnv fEnv e @ CAs vEnv fEnv acc @ repeat n [GETSP; CSTI n; SUB; LDI; STI; INCSP -1] [] 
         | Return(o)         -> match o with   
                                | Some(v) -> CE vEnv fEnv v @ [RET (snd vEnv)]
                                | None    -> [RET (snd vEnv - 1)]
