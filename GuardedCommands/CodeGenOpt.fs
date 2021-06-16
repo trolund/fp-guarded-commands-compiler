@@ -3,9 +3,7 @@
 // A part of the program is directly copied from the file 
 // File MicroC/Contcomp.fs of the MicroC compiler by Peter Sestoft
 
-
 open Machine
-
 open GuardedCommands.Frontend.AST
 
 module CodeGenerationOpt =
@@ -16,14 +14,11 @@ module CodeGenerationOpt =
 
 (* The variable environment keeps track of global and local variables, and 
    keeps track of next available offset for local variables *)
-
    type varEnv = Map<string, Var * Typ> * int
 
 (* The function environment maps function name to label and parameter decs *)
-
    type ParamDecs = (Typ * string) list
    type funEnv = Map<string, label * Typ option * ParamDecs>
-
 
 (* Directly copied from Peter Sestoft   START  
    Code-generating functions that perform local optimizations *)
@@ -105,19 +100,31 @@ module CodeGenerationOpt =
        | N n          -> addCST n k
        | B b          -> addCST (if b then 1 else 0) k
        | Access acc  -> CA acc vEnv fEnv (LDI :: k) 
-
+       
        | Apply("-",[e]) -> CE e vEnv fEnv (addCST 0 (SWAP:: SUB :: k))
-
-       | Apply("&&",[b1;b2]) -> 
-                match k with
-                | IFZERO lab :: _ -> CE b1 vEnv fEnv (IFZERO lab :: CE b2 vEnv fEnv k)
-                | IFNZRO labthen :: k1 -> 
-                        let (labelse, k2) = addLabel k1
-                        CE b1 vEnv fEnv
-                             (IFZERO labelse :: CE b2 vEnv fEnv (IFNZRO labthen :: k2))
-                | _ ->  let (jumpend,  k1) = makeJump k
-                        let (labfalse, k2) = addLabel (addCST 0 k1)
-                        CE b1 vEnv fEnv (IFZERO labfalse :: CE b2 vEnv fEnv (addJump jumpend k2))
+       | Apply("!",[b]) -> CE b vEnv fEnv (addNOT k)
+       | Apply(o,[b1;b2]) -> 
+                match o with
+                | "&&" ->
+                        match k with
+                        | IFZERO lab :: _ -> CE b1 vEnv fEnv (IFZERO lab :: CE b2 vEnv fEnv k)
+                        | IFNZRO labthen :: k1 -> 
+                                let (labelse, k2) = addLabel k1
+                                CE b1 vEnv fEnv
+                                     (IFZERO labelse :: CE b2 vEnv fEnv (IFNZRO labthen :: k2))
+                        | _ ->  let (jumpend,  k1) = makeJump k
+                                let (labfalse, k2) = addLabel (addCST 0 k1)
+                                CE b1 vEnv fEnv (IFZERO labfalse :: CE b2 vEnv fEnv (addJump jumpend k2))
+                | "||" ->
+                        match k with
+                        | IFNZRO lab :: _ -> CE b1 vEnv fEnv (IFNZRO lab :: CE b2 vEnv fEnv k)
+                        | IFZERO labthen :: k1 ->
+                                let (labelse, k2) = addLabel k1
+                                CE b1 vEnv fEnv
+                                      (IFNZRO labelse :: CE b2 vEnv fEnv (IFZERO labthen :: k2))
+                        | _ -> let (jumpend,  k1) = makeJump k
+                               let (labfalse, k2) = addLabel (addCST 1 k1)
+                               CE b1 vEnv fEnv (IFNZRO labfalse :: CE b2 vEnv fEnv (addJump jumpend k2))
 
        | Apply(o,[e1;e2])  when List.exists (fun x -> o=x) ["+"; "*"; "="]
                           -> let ins = match o with
