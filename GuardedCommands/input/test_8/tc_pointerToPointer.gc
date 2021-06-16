@@ -3,6 +3,6 @@ begin
     y: ^int,
     z: int;
     z := 1;
-    x^ := &z;
-    y^ := &x
+    x^ := z;
+    y^ := x^
 end
