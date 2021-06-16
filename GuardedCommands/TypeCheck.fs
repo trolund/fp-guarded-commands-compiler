@@ -6,10 +6,10 @@ open GuardedCommands.Frontend.AST
 module TypeCheck = 
    
    let compareType a b = 
-      //printfn "Type a : %A and type b : %A" a b
       match a, b with
-         | PTyp(t1), PTyp(t2) -> t1 = t2
-         | t1, t2             -> t1 = t2
+         | PTyp(t1), PTyp(t2)       -> t1 = t2
+         | ATyp(t1, _), ATyp(t2, _) -> t1 = t2
+         | t1, t2                   -> t1 = t2
    
    //Compare types between function declaration and function application
    let rec compareTypes xl yl =
