@@ -12,7 +12,6 @@ module TypeCheck =
       | PTyp(t')     -> t'
       //| FTyp(_, t')  -> t'
       | _            -> t
-      
 
    //Compare types between function declaration and function application
    let rec compareTypes xl yl =
@@ -21,6 +20,12 @@ module TypeCheck =
       | [], _        -> false
       | _, []        -> false
       | x::xs, y::ys -> (getPrimitiveType x) = (getPrimitiveType y) && compareTypes xs ys
+   
+   let compareType a b = 
+      //printfn "Type a : %A and type b : %A" a b
+      match a, b with
+         | PTyp(t1), PTyp(t2) -> t1 = t2
+         | t1, t2             -> t1 = t2
 
 /// tcE gtenv ltenv e gives the type for expression e on the basis of type environments gtenv and ltenv
 /// for global and local variables 
@@ -34,7 +39,7 @@ module TypeCheck =
          | Apply(f,[e1;e2]) when List.exists (fun x ->  x=f) ["+"; "-"; "*"; "/"; "%";"="; "<="; ">="; "<>"; "<"; ">"; "&&"; "||"]        
                             -> tcDyadic gtenv ltenv f e1 e2   
          | Apply(f, es)     -> tcNaryFunction gtenv ltenv f es
-         | Addr(acc)        -> tcA gtenv ltenv acc
+         | Addr(acc)        -> PTyp(tcA gtenv ltenv acc) 
          | _                -> failwith "tcE: not supported yet"
 
    and tcMonadic gtenv ltenv f e = match (f, tcE gtenv ltenv e) with
@@ -75,28 +80,23 @@ module TypeCheck =
          | AVar x         -> match Map.tryFind x ltenv with
                              | None   -> match Map.tryFind x gtenv with
                                          | None   -> failwith ("no declaration for : " + x)
-                                         | Some t -> match t with 
-                                                         | PTyp(x)   -> x
-                                                         | _         -> t
-                             | Some t -> match t with 
-                                             | PTyp(x)   -> x
-                                             | _         -> t        
-         | AIndex(acc, e) ->
-                           if (tcE gtenv ltenv e) <> ITyp
-                           then failwith "tcA: adressing using non-integer expression"
-                           match tcA gtenv ltenv acc with
-                              ATyp(t',_) -> t'
-                              | _ -> failwith "tcA: adressing non-array variable"
-         | ADeref e       ->  tcE gtenv ltenv e
-                              //if t = ITyp || t = BTyp then t else 
-                              //failwith "tcA: pointer dereferencing not supported yes"
+                                         | Some t -> t
+                             | Some t -> t        
+         | AIndex(acc, e) -> if (tcE gtenv ltenv e) <> ITyp
+                             then failwith "tcA: adressing using non-integer expression"
+                             match tcA gtenv ltenv acc with
+                                 ATyp(t',_) -> t'
+                                 | _ -> failwith "tcA: adressing non-array variable"
+         | ADeref e       -> match (tcE gtenv ltenv e) with
+                                 | PTyp(t)   -> t
+                                 | _         -> failwith "Illegal deref"
  
 
 /// tcS gtenv ltenv s checks the well-typeness of a statement s on the basis of type environments gtenv and ltenv
 /// for global and local variables 
    and tcS gtenv ltenv = function                           
                          | PrintLn e -> ignore(tcE gtenv ltenv e)
-                         | Ass(acc,e) -> if List.forall2 (fun a e' -> tcA gtenv ltenv a = tcE gtenv ltenv e' ) acc e
+                         | Ass(acc,e) -> if List.forall2 (fun a e' -> compareType (tcA gtenv ltenv a) (tcE gtenv ltenv e')) acc e
                                          then ()
                                          else failwith "illtyped assignment"                          
                          | Alt gc -> tcGC gtenv ltenv gc
