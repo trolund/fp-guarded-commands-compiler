@@ -1,6 +1,6 @@
 ﻿namespace PostScriptGenerator
 
-open FPP1.TreeManager
+open Tree.TreeManager
 open System.IO
 open System.Text
 
@@ -179,7 +179,7 @@ module Generator =
 
 
     let writeToFile n d =
-        File.WriteAllText("../output/" + n + ".ps", d)
+        File.WriteAllText("./output/" + n + ".ps", d)
 
 
     let treeToFile n t =

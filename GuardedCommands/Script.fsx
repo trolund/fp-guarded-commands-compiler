@@ -14,16 +14,16 @@
 #load "CodeGenOpt.fs"
 #load "VirtualMachine.fs"
 #load "Util.fs"
-// #load "./TreeManager/Library.fs"
-// #load "./PostScriptGenerator/Library.fs"
+#load "./TreeManager/Library.fs"
+#load "./PostScriptGenerator/Library.fs"
 
 
 open GuardedCommands.Util
 open GuardedCommands.Frontend.TypeCheck
 open GuardedCommands.Frontend.AST
 open GuardedCommands.Backend.CodeGeneration
-// open PostScriptGenerator.Generator
-// open Tree.TreeManager
+open PostScriptGenerator.Generator
+open Tree.TreeManager
 
 open ParserUtil
 open CompilerUtil
@@ -48,7 +48,7 @@ let _ = exec "test_4/test_func_local_dec_app_1.gc";;
 
 // tree print
 
-// parseProgram testAndTree |> design |> toPSfast |> writeToFile
+parseFromFile "test/A0.gc" |> parseProgram |> design |> toPSfast |> writeToFile "output"
 
 // The Ex0.gc example:
 
