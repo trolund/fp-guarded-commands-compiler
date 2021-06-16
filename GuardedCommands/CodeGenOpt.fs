@@ -103,7 +103,7 @@ module CodeGenerationOpt =
        
        | Apply("-",[e]) -> CE e vEnv fEnv (addCST 0 (SWAP:: SUB :: k))
        | Apply("!",[b]) -> CE b vEnv fEnv (addNOT k)
-       | Apply(o,[b1;b2]) -> 
+       | Apply(o,[b1;b2]) when List.exists (fun x -> o=x) ["&&";"<>";"||"] -> 
                 match o with
                 | "&&" ->
                         match k with
@@ -115,6 +115,7 @@ module CodeGenerationOpt =
                         | _ ->  let (jumpend,  k1) = makeJump k
                                 let (labfalse, k2) = addLabel (addCST 0 k1)
                                 CE b1 vEnv fEnv (IFZERO labfalse :: CE b2 vEnv fEnv (addJump jumpend k2))
+                | "<>" -> CE b1 vEnv fEnv (CE b2 vEnv fEnv (EQ::addNOT(k)))
                 | "||" ->
                         match k with
                         | IFNZRO lab :: _ -> CE b1 vEnv fEnv (IFNZRO lab :: CE b2 vEnv fEnv k)
@@ -125,12 +126,19 @@ module CodeGenerationOpt =
                         | _ -> let (jumpend,  k1) = makeJump k
                                let (labfalse, k2) = addLabel (addCST 1 k1)
                                CE b1 vEnv fEnv (IFNZRO labfalse :: CE b2 vEnv fEnv (addJump jumpend k2))
-
-       | Apply(o,[e1;e2])  when List.exists (fun x -> o=x) ["+"; "*"; "="]
+                | _    -> failwith "CE: this should not happen"
+       | Apply(o,[e1;e2])  when List.exists (fun x -> o=x) ["+"; "-"; "*"; "/"; "%"; "="; "<"; ">"; "<="; ">="]
                           -> let ins = match o with
                                        | "+"  -> ADD::k
+                                       | "-"  -> SUB::k
                                        | "*"  -> MUL::k
+                                       | "/"  -> DIV::k
+                                       | "%"  -> MOD::k
                                        | "="  -> EQ::k
+                                       | "<"  -> LT::k
+                                       | ">"  -> SWAP::LT::k
+                                       | "<=" -> SWAP::LT::addNOT(k)
+                                       | ">=" -> LT::addNOT(k)
                                        | _    -> failwith "CE: this case is not possible"
                              CE e1 vEnv fEnv (CE e2 vEnv fEnv ins) 
 
