@@ -6,6 +6,13 @@ open GuardedCommands.Frontend.AST
 module TypeCheck = 
 
    //Helper functions
+   let getPrimitiveType t =
+      match t with 
+      | ATyp(t', _)  -> t'
+      | PTyp(t')     -> t'
+      //| FTyp(_, t')  -> t'
+      | _            -> t
+      
 
    //Compare types between function declaration and function application
    let rec compareTypes xl yl =
@@ -13,7 +20,7 @@ module TypeCheck =
       | [], []       -> true
       | [], _        -> false
       | _, []        -> false
-      | x::xs, y::ys -> x = y && compareTypes xs ys
+      | x::xs, y::ys -> (getPrimitiveType x) = (getPrimitiveType y) && compareTypes xs ys
 
 /// tcE gtenv ltenv e gives the type for expression e on the basis of type environments gtenv and ltenv
 /// for global and local variables 
@@ -80,9 +87,9 @@ module TypeCheck =
                            match tcA gtenv ltenv acc with
                               ATyp(t',_) -> t'
                               | _ -> failwith "tcA: adressing non-array variable"
-         | ADeref e       ->  let t = tcE gtenv ltenv e
-                              if t = ITyp || t = BTyp then t else 
-                              failwith "tcA: pointer dereferencing not supported yes"
+         | ADeref e       ->  tcE gtenv ltenv e
+                              //if t = ITyp || t = BTyp then t else 
+                              //failwith "tcA: pointer dereferencing not supported yes"
  
 
 /// tcS gtenv ltenv s checks the well-typeness of a statement s on the basis of type environments gtenv and ltenv
