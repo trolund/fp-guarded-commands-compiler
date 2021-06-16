@@ -24,8 +24,8 @@ module CodeGeneration =
     let addLocVar vEnv (t, s) = let (vEnv', fdepth) = vEnv
                                 ((Map.add s (LocVar fdepth, t) vEnv'), fdepth + 1)
 
-    let addLocVars vEnv p = let (vEnv', fdepth) = vEnv
-                            List.fold addLocVar (vEnv', fdepth) p
+    let addLocVars vEnv p = 
+        List.fold addLocVar vEnv p
 
     let lookupFun fEnv s  = 
                 match Map.tryFind s fEnv with 
@@ -44,11 +44,10 @@ module CodeGeneration =
         let (env, fdepth) = vEnv 
         match typ with
         | ATyp (ATyp _, _) -> raise (Failure "allocate: array of arrays not permitted")
-        | ATyp (t, Some i) -> let newEnv = (Map.add x (kind (fdepth + i), typ) env, fdepth + i + 1)
-                              (newEnv, [INCSP i; GETSP; CSTI (i - 1); SUB]) // failwith "allocate: array not supported yet"
+        | ATyp (_, Some i) -> let newEnv = (Map.add x (kind (fdepth + i), typ) env, fdepth + i + 1)
+                              (newEnv, [INCSP i; GETSP; CSTI (i - 1); SUB])
         | _                -> let newEnv = (Map.add x (kind fdepth, typ) env, fdepth + 1)
                               (newEnv, [INCSP 1])
-
 
 
     /// CE vEnv fEnv e gives the code for an expression e on the basis of a variable and a function environment
@@ -100,31 +99,25 @@ module CodeGeneration =
         | AVar x          -> match lookupVar vEnv x with
                              | (GloVar addr, _) -> [CSTI addr]
                              | (LocVar addr, _) -> [GETBP; CSTI addr; ADD]
-        | AIndex(acc, e)  -> CA vEnv fEnv acc @ 
-                             [LDI] @
-                             CE vEnv fEnv e @
-                             [ADD] // failwith "CA: array indexing not supported yet" 
+        | AIndex(acc, e)  -> CA vEnv fEnv acc @ [LDI] @ CE vEnv fEnv e @ [ADD]
         | ADeref e        -> CE vEnv fEnv e // failwith "CA: pointer dereferencing not supported yet"
-    
+    and CAs vEnv fEnv accs = List.collect (CA vEnv fEnv) accs
     /// CS vEnv fEnv s gives the code for a statement s on the basis of a variable and a function environment                          
     let rec CS vEnv fEnv = function
         | PrintLn e         -> CE vEnv fEnv e @ [PRINTI; INCSP -1] 
-        | Ass(acc, e)     -> List.collect (fun (a',e') -> CA vEnv fEnv a' @ CE vEnv fEnv e' @ [STI; INCSP -1]) (List.zip acc e) // TODO
+        | Ass(acc, e)       -> CAs vEnv fEnv acc @ CEs vEnv fEnv e @ [STI] // List.collect (fun (a',e') -> CA vEnv fEnv a' @ CE vEnv fEnv e' @ [STI; INCSP -1]) (List.zip acc e) TODO
         | Return(o)         -> match o with   
-                               | Some(v) -> CE vEnv fEnv v @
-                                            [RET (snd vEnv)]
+                               | Some(v) -> CE vEnv fEnv v @ [RET (snd vEnv)]
                                | None    -> [RET (snd vEnv - 1)]
         | Alt (gc)          -> let endLabel = newLabel()
                                alt' vEnv fEnv endLabel gc @ 
-                               [STOP] @
-                               [Label endLabel]
+                               [STOP] @ [Label endLabel]
         | Do (gc)           -> let startLabel = newLabel()
                                [Label startLabel] @
                                do' vEnv fEnv startLabel gc                       
         | Block([], stms)   -> CSs vEnv fEnv stms
         | Block(decs, stms) -> let (vEnv', code) = compileLocalDecs (vEnv, []) decs
-                               code @
-                               CSs vEnv' fEnv stms @
+                               code @ CSs vEnv' fEnv stms @
                                [INCSP -(List.length decs - 1)]
         | Call (f, es)      -> call vEnv fEnv f es
     and CSs vEnv fEnv stms = List.collect (CS vEnv fEnv) stms 
