@@ -134,7 +134,7 @@ Exp:
 
 ExpL:
                                       { [] }
-   | ExpList                          { List.rev $1 }
+   | ExpList                          { (List.rev $1) }
 
 ExpList: 
    | Exp                              { [$1] }
