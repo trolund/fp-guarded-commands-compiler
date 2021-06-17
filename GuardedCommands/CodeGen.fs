@@ -93,9 +93,8 @@ module CodeGeneration =
         List.collect (CE vEnv fEnv) es
      
     and call vEnv fEnv f es = let (label, _, p) = lookupFun fEnv f
-                              let pLen = List.length p
                               CEs vEnv fEnv es @
-                              [CALL (pLen, label)]
+                              [CALL (List.length p, label)]
 
     /// CA vEnv fEnv acc gives the code for an access acc on the basis of a variable and a function environment
     and CA vEnv fEnv = function 
@@ -121,17 +120,15 @@ module CodeGeneration =
                                do' vEnv fEnv startLabel gc                       
         | Block([], stms)   -> CSs vEnv fEnv stms
         | Block(decs, stms) -> let (vEnv', code) = compileLocalDecs (vEnv, []) decs
-                               code @ CSs vEnv' fEnv stms @
-                               [INCSP -(List.length decs - 1)]
-        | Call (f, es)      -> call vEnv fEnv f es
-                               @ [INCSP -1]
+                               code @ CSs vEnv' fEnv stms @ [INCSP (snd vEnv - snd vEnv')]
+        | Call (f, es)      -> call vEnv fEnv f es @ [INCSP -1]
     and CSs vEnv fEnv stms = List.collect (CS vEnv fEnv) stms 
 
     and alt' vEnv fEnv el = function
         | GC ([])              -> []
         | GC ((b, stms)::alts) -> let labnext = newLabel()
                                   CE vEnv fEnv b @
-                                  [IFZERO labnext] @ 
+                                  [IFZERO labnext] @
                                   CSs vEnv fEnv stms @
                                   [GOTO el] @
                                   [Label labnext] @
@@ -176,12 +173,12 @@ module CodeGeneration =
 
         let rec addv decs vEnv (fEnv : funEnv) = 
             match decs with
-            | []         -> (vEnv, fEnv, [])
-            | dec::decr  -> match dec with
-                            | VarDec (typ, var)        -> let (vEnv1, code1) = allocate GloVar (typ, var) vEnv
-                                                          let (vEnv2, fEnv2, code2) = addv decr vEnv1 fEnv
-                                                          (vEnv2, fEnv2, code1 @ code2)
-                            | FunDec (tyOpt, f, xs, _) -> addv decr vEnv (Map.add f ((newLabel(), tyOpt, List.map decv xs)) fEnv)
+            | []        -> (vEnv, fEnv, [])
+            | dec::decr -> match dec with
+                           | VarDec (typ, var)        -> let (vEnv1, code1) = allocate GloVar (typ, var) vEnv
+                                                         let (vEnv2, fEnv2, code2) = addv decr vEnv1 fEnv
+                                                         (vEnv2, fEnv2, code1 @ code2)
+                           | FunDec (tyOpt, f, xs, _) -> addv decr vEnv (Map.add f ((newLabel(), tyOpt, List.map decv xs)) fEnv)
         addv decs (Map.empty, 0) Map.empty
 
 
