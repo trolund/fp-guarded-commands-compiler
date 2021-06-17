@@ -2,9 +2,10 @@ begin
     x: ^int,
     y: ^int,
     z: int;
-    z := 1;
+    z := 88;
     x := &z;
     y := x;
-
+    print y^;
+    y^ := y^ + 42;
     print y^
 end

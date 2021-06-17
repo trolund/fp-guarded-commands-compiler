@@ -34,7 +34,7 @@ System.IO.Directory.SetCurrentDirectory __SOURCE_DIRECTORY__;;
 
 // Basic tets ///////////////////////////////
 
-let testAndTree = parseFromFile "test/par1.gc";;
+let testAndTree = parseFromFile "test_8/tc_pointerToPointer_2.gc";;
 
 let _ = tcP testAndTree;;
 
@@ -44,7 +44,7 @@ let _ = go testAndTree;;
 
 let _ = goTrace testAndTree;;
 
-let _ = exec "test/Swap.gc";;
+let _ = exec "test_8/tc_pointerToPointer_3.gc";;
 
 // tree print
 
