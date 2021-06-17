@@ -156,7 +156,7 @@ module CodeGenerationOpt =
                           | (GloVar addr,_) -> addCST addr k
                           | (LocVar addr,_) -> GETBP::(addCST addr (ADD::k))
       | AIndex(acc, e) -> CA acc vEnv fEnv (LDI::(CE e vEnv fEnv (ADD::k)))
-      | ADeref e       -> failwith "CA: pointer dereferencing not supported yet"
+      | ADeref e       -> CE e vEnv fEnv k
    and CAs accs vEnv fEnv k =
       match accs with
       | [] -> k
@@ -166,8 +166,10 @@ module CodeGenerationOpt =
    let allocate (kind : int -> Var) (typ, x) (vEnv : varEnv)  =
     let (env, fdepth) = vEnv 
     match typ with
-    | ATyp (ATyp _, _) -> failwith "allocate: array of arrays not permitted"
-    | ATyp (t, Some i) -> failwith "allocate: array not supported yet"
+    | ATyp (ATyp _, _) -> raise (Failure "allocate: array of arrays not permitted")
+    | ATyp (t, Some i) -> let newEnv = (Map.add x (kind (fdepth + i), typ) env, fdepth + i + 1)
+                          let code = addINCSP i (GETSP :: addCST (i - 1) [SUB])
+                          (newEnv, code)
     | _ -> 
       let newEnv = (Map.add x (kind fdepth, typ) env, fdepth+1)
       let code = [INCSP 1]
