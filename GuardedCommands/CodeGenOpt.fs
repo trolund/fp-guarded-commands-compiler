@@ -170,11 +170,9 @@ module CodeGenerationOpt =
     | ATyp (t, Some i) -> let newEnv = (Map.add x (kind (fdepth + i), typ) env, fdepth + i + 1)
                           let code = addINCSP i (GETSP :: addCST (i - 1) [SUB])
                           (newEnv, code)
-    | _ -> 
-      let newEnv = (Map.add x (kind fdepth, typ) env, fdepth+1)
-      let code = [INCSP 1]
-      (newEnv, code)
-
+    | _                -> let newEnv = (Map.add x (kind fdepth, typ) env, fdepth+1)
+                          let code = [INCSP 1]
+                          (newEnv, code)
                       
 /// CS s vEnv fEnv k gives the code for a statement s on the basis of a variable and a function environment and continuation k                            
    let rec CS stm vEnv fEnv k = 

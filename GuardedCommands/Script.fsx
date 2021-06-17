@@ -34,7 +34,7 @@ System.IO.Directory.SetCurrentDirectory __SOURCE_DIRECTORY__;;
 
 // Basic tets ///////////////////////////////
 
-let testFile = "test/QuickSortV2.gc";
+let testFile = "test_5/tc_arrayIndexAssOp.gc";
 
 let testTree = parseFromFile testFile
 
@@ -46,9 +46,8 @@ let _ = go testTree;;
 
 let _ = goTrace testTree;;
 
+let _ = execOpt testFile
 let _ = exec testFile
-
-repeat 10 (fun x -> [x]) []
 
 // tree print
 
