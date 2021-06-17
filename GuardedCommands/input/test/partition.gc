@@ -4,7 +4,7 @@ procedure swap(a: int[], i: int, j: int) =
 
 procedure printA(a: int[], len:int) = {i: int;  i:= 0; do ! i=len -> print a[i]; i:= i+1 od},
 
-procedure partition(a : int[], x0 : int, i: int, j: int, p: *int) =
+procedure partition(a : int[], x0 : int, i: int, j: int, p: ^int) =
 { do i<=j && a[i] <= x0 -> i:= i+1
    | i<=j               -> swap(a, i, j); j:= j-1
   od ;
