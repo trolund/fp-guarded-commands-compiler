@@ -34,7 +34,7 @@ System.IO.Directory.SetCurrentDirectory __SOURCE_DIRECTORY__;;
 
 // Basic tets ///////////////////////////////
 
-let testAndTree = parseFromFile "test_8/tc_pointerToPointer_2.gc";;
+let testAndTree = parseFromFile "test_6/tc_overwritingAss.gc";;
 
 let _ = tcP testAndTree;;
 
@@ -44,7 +44,9 @@ let _ = go testAndTree;;
 
 let _ = goTrace testAndTree;;
 
-let _ = exec "test_8/tc_pointerToPointer_3.gc";;
+let _ = exec "test_6/tc_maEvalBeforeLocBeforeAss.gc";;
+
+repeat 10 (fun x -> [x]) []
 
 // tree print
 
@@ -52,7 +54,7 @@ let programToPS (fn: string) =
     let words = fn.Split [|'/'|]
     parseFromFile fn |> parseProgram |> treeToFile (words.[words.Length - 1])
 
-programToPS "test_6/tc_simpleCase.gc"
+programToPS "test_6/tc_overwritingAss.gc"
 
 // The Ex0.gc example:
 
