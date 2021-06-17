@@ -58,9 +58,9 @@ module CodeGeneration =
         | N n                   -> [CSTI n]
         | B b                   -> [CSTI (if b then 1 else 0)]
         | Access acc            -> CA vEnv fEnv acc @ [LDI] 
-        | Addr acc              -> CA vEnv fEnv acc // muligvis ikke rigtig.
+        | Addr acc              -> CA vEnv fEnv acc
         | Apply("-", [e])       -> CE vEnv fEnv e @ [CSTI 0; SWAP; SUB]
-        | Apply("!", [b])       -> CE vEnv fEnv b @ [NOT] // muligvis ikke rigtig.
+        | Apply("!", [b])       -> CE vEnv fEnv b @ [NOT]
         | Apply(o, [b1; b2]) when List.exists (fun x -> o = x) ["&&"; "||"; "<>"]
                                 -> match o with
                                    | "&&" -> let labend   = newLabel()
@@ -102,13 +102,16 @@ module CodeGeneration =
                              | (GloVar addr, _) -> [CSTI addr]
                              | (LocVar addr, _) -> [GETBP; CSTI addr; ADD]
         | AIndex(acc, e)  -> CA vEnv fEnv acc @ [LDI] @ CE vEnv fEnv e @ [ADD]
-        | ADeref e        -> CE vEnv fEnv e // failwith "CA: pointer dereferencing not supported yet"
+        | ADeref e        -> CE vEnv fEnv e
     and CAs vEnv fEnv accs = List.collect (CA vEnv fEnv) accs
     /// CS vEnv fEnv s gives the code for a statement s on the basis of a variable and a function environment                          
     let rec CS vEnv fEnv = function
         | PrintLn e         -> CE vEnv fEnv e @ [PRINTI; INCSP -1] 
-        | Ass(acc, e)       -> let n = e.Length
-                               CEs vEnv fEnv (List.rev e) @ CAs vEnv fEnv (List.rev acc) @ repeat n [GETSP; CSTI n; SUB; LDI; STI; INCSP -1] [] @ repeat n [INCSP -1] []
+        | Ass(accs, es)     -> let n = es.Length
+                               CEs vEnv fEnv (List.rev es) @
+                               CAs vEnv fEnv (List.rev accs) @
+                               repeat n [GETSP; CSTI n; SUB; LDI; STI; INCSP -1] [] @
+                               repeat n [INCSP -1] []
         | Return(o)         -> match o with   
                                | Some(v) -> CE vEnv fEnv v @ [RET (snd vEnv)]
                                | None    -> [RET (snd vEnv - 1)]
