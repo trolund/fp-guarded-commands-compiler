@@ -100,7 +100,7 @@ module CodeGenerationOpt =
        | N n          -> addCST n k
        | B b          -> addCST (if b then 1 else 0) k
        | Access acc  -> CA acc vEnv fEnv (LDI :: k) 
-       
+       // Addr
        | Apply("-",[e]) -> CE e vEnv fEnv (addCST 0 (SWAP:: SUB :: k))
        | Apply("!",[b]) -> CE b vEnv fEnv (addNOT k)
        | Apply(o,[b1;b2]) when List.exists (fun x -> o=x) ["&&";"<>";"||"] -> 
@@ -141,7 +141,7 @@ module CodeGenerationOpt =
                                        | ">=" -> LT::addNOT(k)
                                        | _    -> failwith "CE: this case is not possible"
                              CE e1 vEnv fEnv (CE e2 vEnv fEnv ins) 
-
+       // Apply function
        | _                -> failwith "CE: not supported yet"
        
    and CEs es vEnv fEnv k = 
@@ -154,10 +154,13 @@ module CodeGenerationOpt =
       match acc with 
       | AVar x         -> match Map.find x (fst vEnv) with
                           | (GloVar addr,_) -> addCST addr k
-                          | (LocVar addr,_) -> failwith "CA: Local variables not supported yet"
-      | AIndex(acc, e) -> failwith "CA: array indexing not supported yet"
+                          | (LocVar addr,_) -> GETBP::(addCST addr (ADD::k))
+      | AIndex(acc, e) -> CA acc vEnv fEnv (LDI::(CE e vEnv fEnv (ADD::k)))
       | ADeref e       -> failwith "CA: pointer dereferencing not supported yet"
-
+   and CAs accs vEnv fEnv k =
+      match accs with
+      | [] -> k
+      | acc::accs' -> CA acc vEnv fEnv (CAs accs' vEnv fEnv k)
    
 (* Bind declared variable in env and generate code to allocate it: *)  
    let allocate (kind : int -> Var) (typ, x) (vEnv : varEnv)  =
@@ -175,18 +178,25 @@ module CodeGenerationOpt =
    let rec CS stm vEnv fEnv k = 
        match stm with
        | PrintLn e        -> CE e vEnv fEnv (PRINTI:: INCSP -1 :: k) 
-
-       | Ass(acc,e)       -> List.collect (fun (a',e') -> CA a' vEnv fEnv (CE e' vEnv fEnv (STI:: addINCSP -1 k))) (List.zip acc e)
-
+       | Ass(acc,e)       -> List.collect (fun (a',e') -> CA a' vEnv fEnv (CE e' vEnv fEnv (STI:: addINCSP -1 k))) (List.zip acc e) // BIG TODO
        | Block([],stms)   -> CSs stms vEnv fEnv k
-
+       | Alt(gc)          -> let (endlabel,k2) = addLabel k
+                             gc' gc vEnv fEnv endlabel (STOP::k2)
+       | Do(gc)           -> let startLabel = newLabel() // Regular label since no lookahead
+                             Label startLabel::(gc' gc vEnv fEnv startLabel k)
        | _                -> failwith "CS: this statement is not supported yet"
                                                           
    and CSs stms vEnv fEnv k = 
         match stms with
         | []   -> k
-        | stm::stms' -> CS stm vEnv fEnv (CSs stms' vEnv fEnv k) 
-
+        | stm::stms' -> CS stm vEnv fEnv (CSs stms' vEnv fEnv k)
+   
+   and gc' gc vEnv fEnv el k =
+        match gc with
+        | GC([]) -> k
+        | GC ((b,stms)::alts) -> let (labnext,k2) = addLabel (gc' (GC(alts)) vEnv fEnv el k)
+                                 CE b vEnv fEnv ((IFZERO labnext)::(CSs stms vEnv fEnv (addGOTO el k2)))
+                                 
 (* ------------------------------------------------------------------- *)
 
 (* Build environments for global variables and functions *)
