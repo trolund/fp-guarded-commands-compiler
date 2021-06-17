@@ -113,12 +113,12 @@ module CodeGeneration =
         | Return(o)         -> match o with
                                | Some(v) -> CE vEnv fEnv v @ [RET (snd vEnv)]
                                | None    -> [RET (snd vEnv - 1)]
-        | Alt (gc)          -> let endLabel = newLabel()
-                               gc' vEnv fEnv endLabel gc @ 
-                               [STOP] @ [Label endLabel]
-        | Do (gc)           -> let startLabel = newLabel()
-                               [Label startLabel] @
-                               gc' vEnv fEnv startLabel gc                       
+        | Alt (gc)          -> let labend = newLabel()
+                               gc' vEnv fEnv labend gc @ 
+                               [STOP] @ [Label labend]
+        | Do (gc)           -> let labstart = newLabel()
+                               [Label labstart] @
+                               gc' vEnv fEnv labstart gc                   
         | Block([], stms)   -> CSs vEnv fEnv stms
         | Block(decs, stms) -> let (vEnv', code) = compileLocalDecs (vEnv, []) decs
                                code @ CSs vEnv' fEnv stms @ [INCSP (snd vEnv - snd vEnv')]
