@@ -114,35 +114,26 @@ module CodeGeneration =
                                | Some(v) -> CE vEnv fEnv v @ [RET (snd vEnv)]
                                | None    -> [RET (snd vEnv - 1)]
         | Alt (gc)          -> let endLabel = newLabel()
-                               alt' vEnv fEnv endLabel gc @ 
+                               gc' vEnv fEnv endLabel gc @ 
                                [STOP] @ [Label endLabel]
         | Do (gc)           -> let startLabel = newLabel()
                                [Label startLabel] @
-                               do' vEnv fEnv startLabel gc                       
+                               gc' vEnv fEnv startLabel gc                       
         | Block([], stms)   -> CSs vEnv fEnv stms
         | Block(decs, stms) -> let (vEnv', code) = compileLocalDecs (vEnv, []) decs
                                code @ CSs vEnv' fEnv stms @ [INCSP (snd vEnv - snd vEnv')]
         | Call (f, es)      -> call vEnv fEnv f es @ [INCSP -1]
     and CSs vEnv fEnv stms = List.collect (CS vEnv fEnv) stms 
 
-    and alt' vEnv fEnv el = function
+    and gc' vEnv fEnv lab = function
         | GC ([])              -> []
         | GC ((b, stms)::alts) -> let labnext = newLabel()
                                   CE vEnv fEnv b @
                                   [IFZERO labnext] @
                                   CSs vEnv fEnv stms @
-                                  [GOTO el] @
+                                  [GOTO lab] @
                                   [Label labnext] @
-                                  alt' vEnv fEnv el (GC (alts))
-    and do' vEnv fEnv sl = function
-        | GC ([])              -> []
-        | GC ((b, stms)::alts) -> let labnext = newLabel()
-                                  CE vEnv fEnv b @
-                                  [IFZERO labnext] @ 
-                                  CSs vEnv fEnv stms @
-                                  [GOTO sl] @
-                                  [Label labnext] @
-                                  do' vEnv fEnv sl (GC (alts))
+                                  gc' vEnv fEnv lab (GC (alts))
 
     and compileLocalDec vEnv = function
          | VarDec (t, s) -> let (vEnv', code') = allocate LocVar (t, s) vEnv
