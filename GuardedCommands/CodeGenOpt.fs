@@ -210,7 +210,6 @@ module CodeGenerationOpt =
        | Do(gc)            -> let startLabel = newLabel() // Regular label since no lookahead
                               Label startLabel::(gc' gc vEnv fEnv startLabel k)
        | Call (f, es)      -> call f es vEnv fEnv (addINCSP (-1) k)
-       | _                 -> failwith "CS: this statement is not supported yet"
                                                           
    and CSs stms vEnv fEnv k = 
         match stms with
