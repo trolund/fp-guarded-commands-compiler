@@ -11,6 +11,12 @@
  on Sun JDK 1.5 Hotspot on a 1.6 GHz Pentium M running Windows XP.  
  It takes 0.2 seconds with an abstract machine implemented in C
  and executed on a 1.86 GHz Intel Xeon running Linux.
+
+ Expected output:
+ 724 (for n = 10)
+
+ Expected stack:
+ too long... :)
 */
 
 begin

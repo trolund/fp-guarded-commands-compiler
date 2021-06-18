@@ -1,3 +1,11 @@
-﻿begin
+﻿/*
+   Expected output:
+   
+
+   Expected stack:
+
+*/
+
+begin
   skip
 end

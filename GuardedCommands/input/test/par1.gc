@@ -1,4 +1,13 @@
-﻿begin
+﻿/*
+   Expected output:
+   0
+   1
+
+   Expected stack:
+   1
+*/
+
+begin
   x : int,
   procedure p(y: ^int) = { print y^; y^ := 1 };
   x:= 0;

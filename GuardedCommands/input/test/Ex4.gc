@@ -1,4 +1,15 @@
-﻿begin
+﻿/*
+   Expected output:
+   1
+   2
+   3
+   4
+
+   Expected stack:
+   4
+*/
+
+begin
   x : int;
   x := 1; 
   do  x=1 -> print x; x:= x+1

@@ -1,4 +1,12 @@
-﻿begin
+﻿/*
+   Expected output:
+   24
+
+   Expected stack:
+   24
+*/
+
+begin
 res : int,
 function fact(n: int): int =
 {  x:int, y:int ;

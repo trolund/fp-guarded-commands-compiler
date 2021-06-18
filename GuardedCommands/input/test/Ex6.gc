@@ -1,4 +1,11 @@
-﻿
+﻿/*
+   Expected output:
+   10
+   3
+
+   Expected stack:
+   3
+*/
 
 begin 
    x: int; 

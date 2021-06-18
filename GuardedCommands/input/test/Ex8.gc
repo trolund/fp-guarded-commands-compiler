@@ -1,4 +1,9 @@
-﻿begin
+﻿/*
+   Expected output:
+   "System.Exception: Local declaration has to be assigned to a function/procedure declaration"
+*/
+
+begin
   x: int,
   procedure g() =
   { x:= 1;

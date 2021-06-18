@@ -1,4 +1,14 @@
-﻿begin
+﻿/*
+   Expected output:
+   0 
+   1 
+   2
+
+   Expected stack:
+   3  0  1  2  1
+*/
+
+begin
   i : int,
   a : int[3];
   i:= 0;

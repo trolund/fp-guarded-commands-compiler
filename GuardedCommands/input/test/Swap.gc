@@ -1,3 +1,16 @@
+/*
+   Expected output:
+   0
+   1
+   2
+   1
+   0
+   2
+
+   Expected stack:
+   1  0  2  0
+*/
+
 begin
    procedure swap(a: int[], i: int, j: int) =
      { tmp: int; tmp := a[i]; a[i] := a[j]; a[j] := tmp},

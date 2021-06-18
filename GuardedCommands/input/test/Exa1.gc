@@ -1,4 +1,12 @@
-﻿begin
+﻿/*
+   Expected output:
+   
+
+   Expected stack:
+   2
+*/
+
+begin
   x : int;
   x := 2;
   if  x=3 -> print 3

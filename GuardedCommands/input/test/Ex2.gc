@@ -1,4 +1,12 @@
-﻿begin
+﻿/*
+   Expected output:
+   4
+
+   Expected stack:
+   4  8
+*/
+
+begin
   res : int,
   x: int;
   { res := 4;

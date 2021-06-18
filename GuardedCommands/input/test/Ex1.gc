@@ -1,3 +1,11 @@
+/*
+   Expected output:
+   4
+
+   Expected stack:
+   4
+*/
+
 begin
     res : int;
     res := 4;
