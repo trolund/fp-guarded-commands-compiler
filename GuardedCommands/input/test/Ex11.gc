@@ -18,24 +18,31 @@ begin
 
   u := 1;
   do u <= 2*n -> {
-    diag1[u], diag2[u] := false,false;
+    diag1[u] := false;
+    diag2[u] := false;
     u := u + 1}
   od;
 
-  i,u := 1,1;
+  i := 1;
+  u := 1;
   do i > 0 -> {
       do i <= n && i <> 0 -> {
           do u <= n && (used[u] || diag1[u-i+n] || diag2[u+i]) -> u:=u+1 od;
           if u <= n -> {
               col[i] := u;
-              used[u],diag1[u-i+n],diag2[u+i] := true, true, true;
-              i,u := i+1,1
+              used[u] := true;
+              diag1[u-i+n] := true;
+              diag2[u+i] := true;
+              i := i+1;
+              u := 1
             }
           | true    -> {
               i := i - 1;
               if i > 0 -> {
                 u := col[i];
-                used[u],diag1[u-i+n],diag2[u+i] := false, false, false;
+                used[u] := false;
+                diag1[u-i+n] := false;
+                diag2[u+i] := false;
                 u := u + 1}
               | true -> skip
               fi
@@ -49,7 +56,9 @@ begin
         i := i-1;
         if i > 0 -> {
           u := col[i];
-          used[u],diag1[u-i+n],diag2[u+i] := false, false, false;
+          used[u] := false;
+          diag1[u-i+n] := false;
+          diag2[u+i] := false;
           u := u + 1}
         | true -> skip
         fi}
