@@ -21,7 +21,7 @@
 open GuardedCommands.Util
 open GuardedCommands.Frontend.TypeCheck
 open GuardedCommands.Frontend.AST
-open GuardedCommands.Backend.CodeGeneration
+open GuardedCommands.Backend.CodeGenerationOpt
 open PostScriptGenerator.Generator
 open Tree.TreeManager
 
@@ -34,7 +34,7 @@ System.IO.Directory.SetCurrentDirectory __SOURCE_DIRECTORY__;;
 
 // Basic tets ///////////////////////////////
 
-let testFile = "test_5/tc_arrayIndexAssOp.gc";;
+let testFile = "test/Ex11.gc";;
 
 let testTree = parseFromFile testFile
 

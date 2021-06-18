@@ -204,7 +204,8 @@ module CodeGenerationOpt =
 /// CS s vEnv fEnv k gives the code for a statement s on the basis of a variable and a function environment and continuation k                            
    let rec CS stm vEnv fEnv k = 
        match stm with
-       | PrintLn e         -> CE e vEnv fEnv (PRINTI:: INCSP -1 :: k) 
+       | PrintLn e         -> CE e vEnv fEnv (PRINTI:: INCSP -1 :: k)
+       | Ass([acc],[e])    -> CA acc vEnv fEnv (CE e vEnv fEnv (STI:: addINCSP -1 k))
        | Ass(accs,es)      -> let n = es.Length
                               // CEs es vEnv fEnv k @ CAs accs vEnv fEnv k @ repeat n (fun x -> [GETSP; CSTI (x-1); SUB; LDI; GETSP; CSTI (n+x); SUB; LDI; STI; INCSP -1]) [] @ [INCSP -(n*2)]
                               let shiftReduce = repeat n (fun x -> [GETSP; CSTI (x-1); SUB; LDI; GETSP; CSTI (n+x); SUB; LDI; STI; INCSP -1]) []
