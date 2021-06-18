@@ -40,6 +40,8 @@ module CompilerUtil =
 /// goOpt p compiles (using the optimized version) abstract syntax of a program, runs the code  
    let goOpt p = run(code2ints(CodeGenerationOpt.CP p))
 
+   let goOptTrace p = runTrace(code2ints(CodeGenerationOpt.CP p))
+
 /// go p compiles abstract syntax of a program, runs the code
    let go p = run(code2ints(CodeGeneration.CP p))
 

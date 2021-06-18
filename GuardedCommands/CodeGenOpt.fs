@@ -94,6 +94,13 @@ module CodeGenerationOpt =
 (* ------------------------------------------------------------------- *)
 
 (* End code directly copied from Peter Sestoft *)
+
+   let rec repeat n (s: int -> list<'a>) acc =
+        match n with 
+        | 0 -> acc
+        | _ -> repeat (n-1) s (acc @ (s n)) 
+
+
 /// CE e vEnv fEnv k gives the code for an expression e on the basis of a variable and a function environment and continuation k
    let rec CE e vEnv fEnv k = 
        match e with
@@ -178,7 +185,10 @@ module CodeGenerationOpt =
    let rec CS stm vEnv fEnv k = 
        match stm with
        | PrintLn e        -> CE e vEnv fEnv (PRINTI:: INCSP -1 :: k) 
-       | Ass(acc,e)       -> List.collect (fun (a',e') -> CA a' vEnv fEnv (CE e' vEnv fEnv (STI:: addINCSP -1 k))) (List.zip acc e) // BIG TODO
+       | Ass(accs,es)     -> let n = es.Length
+                             // CEs es vEnv fEnv k @ CAs accs vEnv fEnv k @ repeat n (fun x -> [GETSP; CSTI (x-1); SUB; LDI; GETSP; CSTI (n+x); SUB; LDI; STI; INCSP -1]) [] @ [INCSP -(n*2)]
+                             let shiftReduce = repeat n (fun x -> [GETSP; CSTI (x-1); SUB; LDI; GETSP; CSTI (n+x); SUB; LDI; STI; INCSP -1]) []
+                             CEs es vEnv fEnv (CAs accs vEnv fEnv (shiftReduce @ addINCSP (-(n*2)) k)) 
        | Block([],stms)   -> CSs stms vEnv fEnv k
        | Alt(gc)          -> let (endlabel,k2) = addLabel k
                              gc' gc vEnv fEnv endlabel (STOP::k2)

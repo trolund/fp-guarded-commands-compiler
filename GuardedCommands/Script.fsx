@@ -34,7 +34,7 @@ System.IO.Directory.SetCurrentDirectory __SOURCE_DIRECTORY__;;
 
 // Basic tets ///////////////////////////////
 
-let testFile = "test_5/tc_arrayIndexAssOp.gc";
+let testFile = "test_5/tc_arrayIndexAssOp.gc";;
 
 let testTree = parseFromFile testFile
 
@@ -44,6 +44,7 @@ let testAndCode = CP testTree;;
 
 let _ = go testTree;;
 
+let _ = goOptTrace testTree;;
 let _ = goTrace testTree;;
 
 let _ = execOpt testFile
