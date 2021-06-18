@@ -1,0 +1,34 @@
+/* start of program */
+begin
+  /* 
+  dlkdsfdslkfdsf
+  skipfdslkfdlgdgds
+  
+  😢 😭 😤 😠 😡 🤬 🤯 😳 🥵 🥶 😱 😨 😰 😥 😓 🤗 🤔 🤭 🤫
+  4%%%# 5🎃
+  
+  🎃😢 😭 😤 😠 😡 🤬 🤯 😳 🥵 🥶 😱 😨 😰 😥 😓 🤗 🤔 🤭 🤫
+ + % - # && / ( ) [ ] }  ) ?
+  🎃
+😭 😤 😠 😡 🤬 🤯 😳
+  🎃
+  
+  */
+
+  a : int[3],
+  function f(): int = {b: int[2]; b[1] := 7; return b[1]},
+  function g(c: int[]): int = {c[0] := 25; print c[0]; return -1};
+  print 3;
+  a[0] := 2;
+  print a[0];
+  /* 
+    function application and 
+    returns the result of the function f  
+  */
+  print f();
+  /* function application of g with a as argument */
+  print g(a);
+  /* prints a index 0 */
+  print a[0]
+end
+/* end of program */

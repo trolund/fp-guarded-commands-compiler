@@ -35,6 +35,7 @@ let int = digit+
 let identifier  = char(char|digit|['_'])*
 let quote                 = '\"'
 let StringConst           = quote ([^'\"'])* quote
+let multiLineComment      = "/*" ([^'*'])* ([^'*' '/'] ([^'*'])* '*' | '*')* "/"
 
 
 rule tokenize = 
@@ -71,5 +72,5 @@ rule tokenize =
   | "&"         { AOF } 
   | "^"         { DREF }
   | identifier  { keyword(Encoding.UTF8.GetString(lexbuf.Lexeme)) }
+  | multiLineComment { tokenize lexbuf }
   | eof         { EOF   }
-
