@@ -20,9 +20,25 @@ module CodeGenerationOpt =
    type ParamDecs = (Typ * string) list
    type funEnv = Map<string, label * Typ option * ParamDecs>
 
+   let addLocVar vEnv (t, s) = let (vEnv', fdepth) = vEnv
+                               ((Map.add s (LocVar fdepth, t) vEnv'), fdepth + 1)
+
+   let addLocVars vEnv p = 
+        List.fold addLocVar vEnv p
+
+   let lookupFun fEnv s =
+        match Map.tryFind s fEnv with
+        | None    -> failwith ("lookup: "+s+" not found.")
+        | Some(x) -> x
+
+   let lookupVar vEnv s =
+        let (vEnv', _) = vEnv
+        match Map.tryFind s vEnv' with
+        | None    -> failwith ("lookup: "+s+" not found.")
+        | Some(x) -> x
+
 (* Directly copied from Peter Sestoft   START  
    Code-generating functions that perform local optimizations *)
-
    let rec addINCSP m1 C : instr list =
        match C with
        | INCSP m2            :: C1 -> addINCSP (m1+m2) C1
@@ -104,10 +120,10 @@ module CodeGenerationOpt =
 /// CE e vEnv fEnv k gives the code for an expression e on the basis of a variable and a function environment and continuation k
    let rec CE e vEnv fEnv k = 
        match e with
-       | N n          -> addCST n k
-       | B b          -> addCST (if b then 1 else 0) k
-       | Access acc  -> CA acc vEnv fEnv (LDI :: k) 
-       // Addr
+       | N n            -> addCST n k
+       | B b            -> addCST (if b then 1 else 0) k
+       | Access acc     -> CA acc vEnv fEnv (LDI :: k) 
+       | Addr acc       -> CA acc vEnv fEnv k
        | Apply("-",[e]) -> CE e vEnv fEnv (addCST 0 (SWAP:: SUB :: k))
        | Apply("!",[b]) -> CE b vEnv fEnv (addNOT k)
        | Apply(o,[b1;b2]) when List.exists (fun x -> o=x) ["&&";"<>";"||"] -> 
@@ -148,13 +164,17 @@ module CodeGenerationOpt =
                                        | ">=" -> LT::addNOT(k)
                                        | _    -> failwith "CE: this case is not possible"
                              CE e1 vEnv fEnv (CE e2 vEnv fEnv ins) 
-       // Apply function
+       | Apply(f,es)      -> call f es vEnv fEnv k
        | _                -> failwith "CE: not supported yet"
        
    and CEs es vEnv fEnv k = 
       match es with 
       | []     -> k
       | e::es' -> CE e vEnv fEnv (CEs es' vEnv fEnv k) 
+   
+   and call f es vEnv fEnv k =
+      let (label, _, p) = lookupFun fEnv f
+      CEs es vEnv fEnv (makeCall (List.length p) label k)
 
 /// CA acc vEnv fEnv k gives the code for an access acc on the basis of a variable and a function environment and continuation k
    and CA acc vEnv fEnv k = 
@@ -206,12 +226,32 @@ module CodeGenerationOpt =
         | GC([]) -> k
         | GC ((b,stms)::alts) -> let (labnext,k2) = addLabel (gc' (GC(alts)) vEnv fEnv el k)
                                  CE b vEnv fEnv ((IFZERO labnext)::(CSs stms vEnv fEnv (addGOTO el k2)))
-                                 
+
+   and compileLocalDec vEnv = function
+        | VarDec (t, s) -> allocate LocVar (t, s) vEnv
+        | FunDec _      -> (vEnv, [])
+   and compileLocalDecs (vEnv, code) = function
+        | []            -> (vEnv,code)
+        | d::ds         -> let (vEnv', code') = compileLocalDec vEnv d
+                           compileLocalDecs (vEnv', code @ code') ds
+
+   and compileFunc vEnv fEnv = function
+        | VarDec _              -> []
+        | FunDec (_, s, _, stm) -> let vEnv' = (fst vEnv, 0)
+                                   let (label, _, p) = lookupFun fEnv s
+                                   let localvEnv = addLocVars vEnv' p
+                                   Label label::(CS stm localvEnv fEnv [RET (List.length p - 1)])                      
+   and compileFuncs vEnv fEnv decs = 
+        List.collect (compileFunc vEnv fEnv) decs
+
 (* ------------------------------------------------------------------- *)
 
 (* Build environments for global variables and functions *)
-
    let makeGlobalEnvs decs = 
+       let decv = function
+           | VarDec (t,s) -> (t,s)
+           | FunDec _     -> failwith "decv: A function parameter can not be a unction itself"
+
        let rec addv decs vEnv fEnv = 
            match decs with 
            | []         -> (vEnv, fEnv, [])
@@ -220,15 +260,11 @@ module CodeGenerationOpt =
              | VarDec (typ, var) -> let (vEnv1, code1) = allocate GloVar (typ, var) vEnv
                                     let (vEnv2, fEnv2, code2) = addv decr vEnv1 fEnv
                                     (vEnv2, fEnv2, code1 @ code2)
-             | FunDec (tyOpt, f, xs, body) -> failwith "makeGlobalEnvs: function/procedure declarations not supported yet"
+             | FunDec (tyOpt, f, xs, _) -> addv decr vEnv (Map.add f ((newLabel(), tyOpt, List.map decv xs)) fEnv)
        addv decs (Map.empty, 0) Map.empty
 
 (* CP compiles a program *)
-
    let CP (P(decs,stms)) = 
        let _ = resetLabels ()
        let ((gvM,_) as gvEnv, fEnv, initCode) = makeGlobalEnvs decs
-       initCode @ CSs stms gvEnv fEnv [STOP]     
-
-
-
+       initCode @ CSs stms gvEnv fEnv (STOP::(compileFuncs gvEnv fEnv decs))
