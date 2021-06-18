@@ -204,17 +204,22 @@ module CodeGenerationOpt =
 /// CS s vEnv fEnv k gives the code for a statement s on the basis of a variable and a function environment and continuation k                            
    let rec CS stm vEnv fEnv k = 
        match stm with
-       | PrintLn e        -> CE e vEnv fEnv (PRINTI:: INCSP -1 :: k) 
-       | Ass(accs,es)     -> let n = es.Length
-                             // CEs es vEnv fEnv k @ CAs accs vEnv fEnv k @ repeat n (fun x -> [GETSP; CSTI (x-1); SUB; LDI; GETSP; CSTI (n+x); SUB; LDI; STI; INCSP -1]) [] @ [INCSP -(n*2)]
-                             let shiftReduce = repeat n (fun x -> [GETSP; CSTI (x-1); SUB; LDI; GETSP; CSTI (n+x); SUB; LDI; STI; INCSP -1]) []
-                             CEs es vEnv fEnv (CAs accs vEnv fEnv (shiftReduce @ addINCSP (-(n*2)) k)) 
-       | Block([],stms)   -> CSs stms vEnv fEnv k
-       | Alt(gc)          -> let (endlabel,k2) = addLabel k
-                             gc' gc vEnv fEnv endlabel (STOP::k2)
-       | Do(gc)           -> let startLabel = newLabel() // Regular label since no lookahead
-                             Label startLabel::(gc' gc vEnv fEnv startLabel k)
-       | _                -> failwith "CS: this statement is not supported yet"
+       | PrintLn e         -> CE e vEnv fEnv (PRINTI:: INCSP -1 :: k) 
+       | Ass(accs,es)      -> let n = es.Length
+                              // CEs es vEnv fEnv k @ CAs accs vEnv fEnv k @ repeat n (fun x -> [GETSP; CSTI (x-1); SUB; LDI; GETSP; CSTI (n+x); SUB; LDI; STI; INCSP -1]) [] @ [INCSP -(n*2)]
+                              let shiftReduce = repeat n (fun x -> [GETSP; CSTI (x-1); SUB; LDI; GETSP; CSTI (n+x); SUB; LDI; STI; INCSP -1]) []
+                              CEs es vEnv fEnv (CAs accs vEnv fEnv (shiftReduce @ addINCSP (-(n*2)) k)) 
+       | Return(o)         -> match o with
+                              | Some(v) -> CE v vEnv fEnv (RET (snd vEnv)::k)
+                              | None    -> RET (snd vEnv - 1)::k
+       | Block([],stms)    -> CSs stms vEnv fEnv k
+       | Block(decs, stms) -> let (vEnv', code) = compileLocalDecs (vEnv, []) decs
+                              code @ CSs stms vEnv' fEnv (addINCSP (snd vEnv - snd vEnv') k) // TODO: still uses append?
+       | Alt(gc)           -> let (endlabel,k2) = addLabel k
+                              gc' gc vEnv fEnv endlabel (STOP::k2)
+       | Do(gc)            -> let startLabel = newLabel() // Regular label since no lookahead
+                              Label startLabel::(gc' gc vEnv fEnv startLabel k)
+       | Call (f, es)      -> call f es vEnv fEnv (addINCSP (-1) k)
                                                           
    and CSs stms vEnv fEnv k = 
         match stms with
