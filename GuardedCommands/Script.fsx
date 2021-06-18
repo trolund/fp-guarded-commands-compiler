@@ -32,7 +32,7 @@ open CompilerUtil
 
 System.IO.Directory.SetCurrentDirectory __SOURCE_DIRECTORY__;;
 
-// Basic tets ///////////////////////////////
+// Basic tests ///////////////////////////////
 
 let testFile = "test/Ex11.gc";;
 
