@@ -107,8 +107,8 @@ module CodeGeneration =
     /// CS vEnv fEnv s gives the code for a statement s on the basis of a variable and a function environment                          
     let rec CS vEnv fEnv = function
         | PrintLn e         -> CE vEnv fEnv e @ [PRINTI; INCSP -1] 
-        | Ass(acc, e)       -> let n = e.Length
-                               CEs vEnv fEnv e @ CAs vEnv fEnv acc @ repeat n (fun x -> [GETSP; CSTI (x-1); SUB; LDI; GETSP; CSTI (n+x); SUB; LDI; STI; INCSP -1]) [] @ [INCSP -(n*2)]
+        | Ass(accs, es)     -> let n = es.Length
+                               CEs vEnv fEnv es @ CAs vEnv fEnv accs @ repeat n (fun x -> [GETSP; CSTI (x-1); SUB; LDI; GETSP; CSTI (n+x); SUB; LDI; STI; INCSP -1]) [] @ [INCSP -(n*2)]
                                //CEs vEnv fEnv (List.rev e) @ CAs vEnv fEnv (List.rev acc) @ repeat n [GETSP; CSTI n; SUB; LDI; STI; INCSP -1] [] @ repeat n [INCSP -1] []
         | Return(o)         -> match o with
                                | Some(v) -> CE vEnv fEnv v @ [RET (snd vEnv)]
