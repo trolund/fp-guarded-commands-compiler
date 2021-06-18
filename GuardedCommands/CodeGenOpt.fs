@@ -28,18 +28,17 @@ module CodeGenerationOpt =
 
    let lookupFun fEnv s =
         match Map.tryFind s fEnv with
-        | None -> failwith ("lookup: "+s+" not found.")
+        | None    -> failwith ("lookup: "+s+" not found.")
         | Some(x) -> x
 
    let lookupVar vEnv s =
         let (vEnv', _) = vEnv
         match Map.tryFind s vEnv' with
-        | None -> failwith ("lookup: "+s+" not found.")
+        | None    -> failwith ("lookup: "+s+" not found.")
         | Some(x) -> x
 
 (* Directly copied from Peter Sestoft   START  
    Code-generating functions that perform local optimizations *)
-
    let rec addINCSP m1 C : instr list =
        match C with
        | INCSP m2            :: C1 -> addINCSP (m1+m2) C1
@@ -114,10 +113,10 @@ module CodeGenerationOpt =
 /// CE e vEnv fEnv k gives the code for an expression e on the basis of a variable and a function environment and continuation k
    let rec CE e vEnv fEnv k = 
        match e with
-       | N n          -> addCST n k
-       | B b          -> addCST (if b then 1 else 0) k
-       | Access acc  -> CA acc vEnv fEnv (LDI :: k) 
-       // Addr
+       | N n            -> addCST n k
+       | B b            -> addCST (if b then 1 else 0) k
+       | Access acc     -> CA acc vEnv fEnv (LDI :: k) 
+       | Addr acc       -> CA acc vEnv fEnv k
        | Apply("-",[e]) -> CE e vEnv fEnv (addCST 0 (SWAP:: SUB :: k))
        | Apply("!",[b]) -> CE b vEnv fEnv (addNOT k)
        | Apply(o,[b1;b2]) when List.exists (fun x -> o=x) ["&&";"<>";"||"] -> 
@@ -233,7 +232,7 @@ module CodeGenerationOpt =
                            compileLocalDecs (vEnv', code @ code') ds
 
    and compileFunc vEnv fEnv = function
-        | VarDec _ -> []
+        | VarDec _              -> []
         | FunDec (_, s, _, stm) -> let vEnv' = (fst vEnv, 0)
                                    let (label, _, p) = lookupFun fEnv s
                                    let localvEnv = addLocVars vEnv' p
@@ -244,11 +243,10 @@ module CodeGenerationOpt =
 (* ------------------------------------------------------------------- *)
 
 (* Build environments for global variables and functions *)
-
    let makeGlobalEnvs decs = 
        let decv = function
            | VarDec (t,s) -> (t,s)
-           | FunDec _ -> failwith "decv: A function parameter can not be a unction itself"
+           | FunDec _     -> failwith "decv: A function parameter can not be a unction itself"
 
        let rec addv decs vEnv fEnv = 
            match decs with 
@@ -262,11 +260,7 @@ module CodeGenerationOpt =
        addv decs (Map.empty, 0) Map.empty
 
 (* CP compiles a program *)
-
    let CP (P(decs,stms)) = 
        let _ = resetLabels ()
        let ((gvM,_) as gvEnv, fEnv, initCode) = makeGlobalEnvs decs
        initCode @ CSs stms gvEnv fEnv (STOP::(compileFuncs gvEnv fEnv decs))
-
-
-
