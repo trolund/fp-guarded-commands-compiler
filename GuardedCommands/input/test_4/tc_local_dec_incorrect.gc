@@ -1,0 +1,12 @@
+begin 
+   x: int,
+   y: int;
+   {
+      a: int,
+      b: int;
+      a := 2;
+      b := a + x;
+      print b
+   };
+   x := 2
+end

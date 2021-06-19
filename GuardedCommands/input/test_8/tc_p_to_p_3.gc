@@ -1,0 +1,11 @@
+begin 
+    x: ^int,
+    y: ^int,
+    z: int;
+    z := 88;
+    x^ := 33;
+    y^ := x^;
+    print y^;
+    y^ := y^ + 42;
+    print y^
+end

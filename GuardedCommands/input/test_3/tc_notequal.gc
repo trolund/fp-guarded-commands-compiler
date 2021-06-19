@@ -1,0 +1,14 @@
+begin
+  x : int,
+  y : int;
+  x := 4;
+  y := 2;
+ 
+  print x <> y;
+  print y <> x;
+  print x <> x;
+  print false <> false;
+  print false <> true;
+  print true <> false;
+  print true <> true
+end

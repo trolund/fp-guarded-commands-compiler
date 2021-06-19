@@ -1,0 +1,11 @@
+begin 
+   x : int,
+   y : int,
+   z : int,
+   p : bool,
+   procedure f(x : int, y : int, z : int, p : bool) = {
+      print p;
+      z := x + (y + z);
+      print z
+   };
+end

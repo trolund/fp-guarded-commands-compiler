@@ -1,0 +1,7 @@
+begin 
+    y: ^int,
+    x: bool;
+    x := true;
+    y := &x;
+    print y^
+end

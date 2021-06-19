@@ -1,0 +1,10 @@
+begin 
+   z : int,
+   procedure f(x : int, y : int, p : bool) = {
+      z := x + y;
+      print p;
+      return
+   };
+   f(5, 10, false);
+   print z
+end

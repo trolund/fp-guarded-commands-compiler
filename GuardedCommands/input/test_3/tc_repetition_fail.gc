@@ -1,0 +1,9 @@
+begin
+  x : int;
+  x := 4;
+  do  x=true -> print 3
+   |  x=false -> print 5
+   |  x=6 -> x:=6
+  od;
+  print 10
+end

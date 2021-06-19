@@ -1,0 +1,147 @@
+/* 
+ Guarded Commands example 11 -- n queens problem * 1996-12-20, 2009-10-01
+
+ Running this with the micro-C interpreter "eval" written in F#:
+ Finding the 724 solutions to the 10 queens problem takes 6-7
+ seconds on a 1.6 GHz Pentium M.
+
+ Running this micro-C program, when compiled to bytecode: 
+ Finding the 724 solutions to the 10 queens problem takes 0.6
+ seconds with an abstract machine implemented in Java and executed
+ on Sun JDK 1.5 Hotspot on a 1.6 GHz Pentium M running Windows XP.  
+ It takes 0.2 seconds with an abstract machine implemented in C
+ and executed on a 1.86 GHz Intel Xeon running Linux.
+*/
+
+begin
+  n: int,
+  i: int,
+  u: int,
+/* 
+  dlkdsfdslkfdsf
+  skipfdslkfdlgdgds
+  
+  😢 😭 😤 😠 😡 🤬 🤯 😳 🥵 🥶 😱 😨 😰 😥 😓 🤗 🤔 🤭 🤫
+  4%%%# 5🎃
+  
+  🎃😢 😭 😤 😠 😡 🤬 🤯 😳 🥵 🥶 😱 😨 😰 😥 😓 🤗 🤔 🤭 🤫
+ + % - # && / ( ) [ ] }  ) ?
+  🎃
+😭 😤 😠 😡 🤬 🤯 😳
+  🎃
+  
+  */
+  sol: int,
+  used: bool[100],
+  diag1: bool[100],
+  diag2: bool[100],
+  col: int[100];
+  
+  /*
+  n sets equal to 10 */
+
+  n := 10;
+  sol := 0; /* sol sets equal to 0 */
+  u := 1;
+  do u <= n -> {
+    used[u] := false;
+    u := u + 1}
+  od;
+
+/* does this work? *//* does this work? *//* does this work? *//* does this work? */
+/* does this work? *//* does this work? *//* does this work? *//* does this work? *//* does this work? */
+
+  u := 1;
+  do u <= 2*n -> {
+    diag1[u] := false;
+    diag2[u] := false;
+    u := u + 1}
+  od;
+
+  i := 1;  /* does this work? */
+  u := 1;/* does this work? */
+  do i > 0 -> { /* does this work? */
+      do i <= n && i <> 0 -> {/* does this work? */
+          do u <= n && (used[u] || diag1[u-i+n] || diag2[u+i]) -> u:=u+1 od;/* does this work? */
+          /* does this work? */
+          if u <= n -> { /* not used[u]; fill col[i] then try col[i+1] */
+              col[i] := u;
+              used[u] := true;
+              /* does this work? */
+              diag1[u-i+n] := true;
+              diag2[u+i] := true;
+              i := i+1;
+              u := 1
+            }
+
+            /* hmm this is a comment */
+          | true    -> { /* backtrack; try to find a new col[i-1] */
+              i := i - 1;
+              if i > 0 -> {
+                u := col[i];
+                used[u] := false;
+                diag1[u-i+n] := false;
+                diag2[u+i] := false;
+                u := u + 1}
+              | true -> skip
+              fi
+            }
+          fi
+        }
+      od;
+
+      /*
+
+      1.:
+"007" - expect: false
+"01-001" - expect: true
+"R02-33b" - expect: true
+"01-001andsometext" - expect: false
+"01-001 andsometext" - expect: true
+"02-33X" - expect: false
+"" - expect: false
+
+2.:
+"We meet in R01-001. Please invite agent 007." -- expect 1 matching rooms
+"Excercise groups take place in 02-23b and 02-33c." --- expect 2 matches
+... 
+
+3.:
+Integration test style. 
+Long input with room numbers in the texts and in header/footer  */
+
+      if i > n -> {  /* output solution, then backtrack */
+        sol := sol + 1;
+        i := i-1;
+        if i > 0 -> {
+          u := col[i];
+          used[u] := false;
+          diag1[u-i+n] := false;
+          diag2[u+i] := false;
+          u := u + 1}
+        | true -> skip
+        fi}
+      | true -> skip
+      fi
+  } od;
+
+  print sol
+end
+
+
+/* 
+  dlkdsfdslkfdsf
+  skipfdslkfdlgdgds
+  
+  + % 2 4 2ljdsfkjsfd 
+  lkjfdss flkdsf kl132234
+  234k23l4324234
+  324
+  234lj32432
+  424
+  ljkfdsf
+  ksdf
+  dlkdsfdslkfdsf
+
+  
+  */

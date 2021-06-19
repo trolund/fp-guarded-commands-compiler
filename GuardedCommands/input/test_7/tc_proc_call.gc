@@ -1,0 +1,23 @@
+begin 
+   x : int,
+   y : int,
+   z : int,
+   a : int,
+   b : int,
+   c : int,
+   procedure f(x: int) = { 
+      print x + 2
+   },
+   procedure g(x: int) = {
+      print x + 2;
+      return
+   };
+   x,y,z,a,b,c := y+1,z+1,a+1,b+1,c+1,1;
+   print x;
+   print y;
+   print z;
+   print a;
+   print b;
+   print c;
+   g(2)
+end

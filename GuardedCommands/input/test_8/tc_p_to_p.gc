@@ -1,0 +1,10 @@
+begin 
+    x: ^int,
+    y: ^int,
+    z: int;
+    z := 1;
+    x := &z;
+    y := x;
+
+    print y^
+end

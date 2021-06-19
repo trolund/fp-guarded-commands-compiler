@@ -1,0 +1,10 @@
+begin 
+   x : int,
+   y : int,
+   z : int,
+   p : bool,
+   function f(x : int, y : int, p : bool) : int = {
+      print p;
+      return x + y
+   };
+end

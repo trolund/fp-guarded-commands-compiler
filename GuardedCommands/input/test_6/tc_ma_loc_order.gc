@@ -1,0 +1,15 @@
+begin 
+    a : int[3],
+    i : int,
+    function f():int = {
+        temp : int;
+        temp := i;
+        i := i + 1;
+        return temp
+    };
+    i:=0;
+    a[f()],a[f()],a[f()] := 1,2,3;
+    print a[0];
+    print a[1];
+    print a[2]
+end

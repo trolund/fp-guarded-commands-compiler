@@ -1,0 +1,25 @@
+begin
+    x : int,
+    y : int,
+    z : int,
+    a : int[3],
+    i : int,
+    function f():int = {
+        temp : int;
+        temp := i;
+        i := i + 1;
+        return temp
+    },
+    function g(b:int):int = {
+        x,y,z := b, b+1, b+2;
+        return 0
+    };
+    x,y,z,a[0],a[1],a[2],i := 0,0,0,0,0,0,0;
+    a[g(i)],a[y-3],a[z-3] := f(),f(),f();
+    print a[0];
+    print a[1];
+    print a[2];
+    print x;
+    print y;
+    print z
+end

@@ -1,0 +1,6 @@
+﻿begin 
+   x: int,
+   b: bool; 
+   x:= 3;
+   b:= 10
+end

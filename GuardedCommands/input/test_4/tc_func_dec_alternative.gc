@@ -1,0 +1,6 @@
+begin 
+   x: int,
+   function fact(n: int): int = if n=0 -> return n
+                              | true -> return n
+                              fi; 
+end

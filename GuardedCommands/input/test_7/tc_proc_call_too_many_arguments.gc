@@ -1,0 +1,7 @@
+begin 
+   y : int,
+   procedure f(x: int) = { 
+      print x + 2;
+   };
+   f(2, 2)
+end

@@ -1,0 +1,7 @@
+begin 
+   function f() : int = { 
+      y: int;
+      y:= 1;
+      return y
+   };
+end

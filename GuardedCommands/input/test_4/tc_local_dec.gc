@@ -1,0 +1,13 @@
+begin 
+   x: int,
+   y: int,
+   function f(x: int): int = { 
+      a: int,
+      b: int;
+      a := 2;
+      b := a + x;
+      print b;
+      return b
+   };
+   x := 2
+end
