@@ -1,0 +1,12 @@
+begin
+    /* Skal printe 999 */
+    x : int,
+    y : int,
+    z : int;
+    x := 1;
+    y := 10;
+    
+    z := (x > 1 ? 55 : (y >= 10 ? 999 : 666));
+
+    print z
+end

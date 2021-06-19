@@ -9,9 +9,9 @@ open GuardedCommands.Frontend.AST
 %token DREF AOF
 %token ITYP BTYP
 %token LP LCP LSP RP RCP RSP
-%token IF FI DO OD BEGIN END FUN PROC
+%token IF FI DO OD BEGIN END FUN PROC COND
 %token COMMA COLON SEMI BAR TO
-%token NEG PLUS MINUS TIMES DIV MOD AND OR EQ LE LT GE GT NEQ
+%token NEG PLUS MINUS TIMES DIV MOD AND OR EQ LE LT GE GT NEQ 
 %token PRINT ASG SKIP ABORT RET
 %token EOF
 %token HIGH
@@ -21,8 +21,9 @@ open GuardedCommands.Frontend.AST
 %left AND
 %nonassoc NEG
 %left EQ LE LT GT GE NEQ
-%left PLUS MINUS
+%left PLUS MINUS 
 %left TIMES DIV MOD
+%right COND
 %left COMMA
 
 %start Main Prog 
@@ -101,13 +102,14 @@ GuardedCommand:
 
 GCList:
     Exp TO StmL                       { [($1,$3)]   }
-  | Exp TO StmL BAR GCList	   		    { ($1,$3)::$5 }
+  | Exp TO StmL BAR GCList	   		    { ($1,$3)::$5 }            
 
 Exp:
     Access                           { Access $1 }
   | INT                              { N $1 }
-  | BOOL                             { B $1 }       
+  | BOOL                             { B $1 } 
   | LP Exp RP                        { $2 } 
+  | LP Exp COND Exp COLON Exp RP     { Ternary($2, $4, $6) }
   | MINUS Exp                        { Apply("-", [$2])}
   | NEG Exp                          { Apply("!", [$2])}
   | Exp TIMES Exp                    { Apply("*", [$1; $3])}

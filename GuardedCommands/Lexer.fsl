@@ -71,6 +71,7 @@ rule tokenize =
   | "+"         { PLUS  }  
   | "&"         { AOF } 
   | "^"         { DREF }
+  | "?"         { COND }
   | identifier  { keyword(Encoding.UTF8.GetString(lexbuf.Lexeme)) }
   | multiLineComment { tokenize lexbuf }
   | eof         { EOF   }

@@ -22,17 +22,22 @@ module TypeCheck =
 /// tcE gtenv ltenv e gives the type for expression e on the basis of type environments gtenv and ltenv
 /// for global and local variables 
    let rec tcE gtenv ltenv = function                            
-         | N _              -> ITyp   
-         | B _              -> BTyp   
-         | Access acc       -> tcA gtenv ltenv acc              
+         | N _                -> ITyp   
+         | B _                -> BTyp   
+         | Access acc         -> tcA gtenv ltenv acc              
          | Apply(f,[e]) when List.exists (fun x ->  x=f) ["-"; "!"]  
-                            -> tcMonadic gtenv ltenv f e        
+                              -> tcMonadic gtenv ltenv f e        
 
          | Apply(f,[e1;e2]) when List.exists (fun x ->  x=f) ["+"; "-"; "*"; "/"; "%";"="; "<="; ">="; "<>"; "<"; ">"; "&&"; "||"]        
-                            -> tcDyadic gtenv ltenv f e1 e2   
-         | Apply(f, es)     -> tcNaryFunction gtenv ltenv f es
-         | Addr(acc)        -> PTyp(tcA gtenv ltenv acc) 
-         | _                -> failwith "tcE: not supported yet"
+                              -> tcDyadic gtenv ltenv f e1 e2   
+         | Apply(f, es)       -> tcNaryFunction gtenv ltenv f es
+         | Addr(acc)          -> PTyp(tcA gtenv ltenv acc) 
+         | Ternary(e1, e2, e3) -> match (tcE gtenv ltenv e1 = BTyp) with
+                                    | false     -> failwith "exp1 in ternary must be a bool"
+                                    | true      -> if (tcE gtenv ltenv e2 = tcE gtenv ltenv e3) then tcE gtenv ltenv e2 
+                                                   else failwith "Illtyped ternary (exp 2 and 3 are different types)"
+         | Ternary(_, _, _)   -> failwith "Illtyped ternary"
+         | _                  -> failwith "tcE: not supported yet"
 
    and tcMonadic gtenv ltenv f e = match (f, tcE gtenv ltenv e) with
                                    | ("-", ITyp) -> ITyp

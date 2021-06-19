@@ -1,0 +1,7 @@
+begin
+    /* Skal fejle da x + 5 ikke er bool exp */
+    x : int;
+    x := 5;
+    x := (x + 5 ? 10 : 20);
+    print x
+end
