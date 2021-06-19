@@ -34,7 +34,7 @@ System.IO.Directory.SetCurrentDirectory __SOURCE_DIRECTORY__;;
 
 // Basic tests ///////////////////////////////
 
-let testFile = "test/Ex11.gc";;
+let testFile = "test_extensions/tc_cond_1_fail.gc";;
 
 let testTree = parseFromFile testFile
 

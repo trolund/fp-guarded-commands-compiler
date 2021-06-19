@@ -1,4 +1,12 @@
-begin 
+/*
+   Expected output:
+   234
+
+   Expected stack:
+   234
+*/
+
+begin  
    y : int,
    function f(x : int) : int = {
       return x

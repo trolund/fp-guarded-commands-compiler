@@ -1,4 +1,9 @@
-﻿begin 
+﻿/*
+   Expected output:
+   "System.Exception: illtyped assignment"
+*/
+
+begin 
    x: int,
    b: bool; 
    x:= 3;

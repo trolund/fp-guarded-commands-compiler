@@ -1,7 +1,12 @@
-begin 
+/*
+   Expected output:
+   "System.Exception: Invalid argument types"
+*/
+
+begin
    y : int,
    procedure f(x: int) = { 
-      print x + 2;
+      print x + 2
    };
    f(2, 2)
 end

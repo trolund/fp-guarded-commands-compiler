@@ -1,4 +1,9 @@
-﻿begin 
+﻿/*
+   Expected output:
+   "System.Exception: illegal/illtyped dyadic expression: <"
+*/
+
+begin
    x: int,
    b: bool; 
    x:= 3;

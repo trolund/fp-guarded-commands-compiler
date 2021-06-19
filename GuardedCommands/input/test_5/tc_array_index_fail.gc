@@ -1,3 +1,8 @@
+/*
+   Expected output:
+   "System.Exception: illegal/illtyped dyadic expression: +"
+*/
+
 begin 
    x: int,
    y: int[3];

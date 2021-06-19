@@ -1,3 +1,13 @@
+/*
+   Expected output:
+   1
+   2
+   3
+
+   Expected stack:
+   1  2  3  6  0
+*/
+
 begin 
    y: int[4];
    y[0] := 1;

@@ -1,3 +1,11 @@
+/*
+   Expected output:
+   1
+
+   Expected stack:
+   1
+*/
+
 begin 
    x : int,
    function f(b : int) : int = { 

@@ -1,5 +1,13 @@
-begin 
-   function f() : int = { 
+/*
+   Expected output:
+   
+
+   Expected stack:
+   
+*/
+
+begin
+   function f(a : int[]) : int = { 
       y: int;
       y:= 1;
       return y

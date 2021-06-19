@@ -1,3 +1,14 @@
+/*
+   Expected output:
+   1
+   30
+   6
+   6
+
+   Expected stack:
+   
+*/
+
 begin 
    function f(x : int, y : int, p : bool) : int = {
       print p;

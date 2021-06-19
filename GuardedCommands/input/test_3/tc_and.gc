@@ -1,3 +1,12 @@
+/*
+   Expected output:
+   1
+   0
+
+   Expected stack:
+   1  1
+*/
+
 begin
    x : bool,
    y : bool;

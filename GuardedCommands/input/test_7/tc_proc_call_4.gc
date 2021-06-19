@@ -1,4 +1,15 @@
-begin 
+/*
+   Expected output:
+   0
+   50
+   0
+   0
+
+   Expected stack:
+   0  0  0  0
+*/
+
+begin
    x : int,
    y : int,
    z : int,

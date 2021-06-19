@@ -1,5 +1,10 @@
+/*
+   Expected output:
+   "System.Exception: parser termination"
+*/
+
 begin 
-   x: int,
-   y: int[0],
-   z: int[-3];
+   x : int,
+   y : int[0],
+   z : int[-3];
 end

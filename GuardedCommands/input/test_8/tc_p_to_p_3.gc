@@ -1,4 +1,13 @@
-begin 
+/*
+   Expected output:
+   0
+   42
+
+   Expected stack:
+   42  0  88
+*/
+
+begin
     x: ^int,
     y: ^int,
     z: int;

@@ -1,3 +1,11 @@
+/*
+   Expected output:
+   5
+
+   Expected stack:
+   5
+*/
+
 begin 
    x : int,
    procedure f() = { 

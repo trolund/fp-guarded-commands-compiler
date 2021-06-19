@@ -1,3 +1,14 @@
+/*
+   Expected output:
+   4
+   6
+   8
+   8
+
+   Expected stack:
+   8
+*/
+
 begin 
    y : int,
    function f(x: int): int = { 

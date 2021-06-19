@@ -1,4 +1,13 @@
-begin 
+/*
+   Expected output:
+   1
+   20
+
+   Expected stack:
+   1  20
+*/
+
+begin
     y : ^int,
     x : int;
     x := 1;

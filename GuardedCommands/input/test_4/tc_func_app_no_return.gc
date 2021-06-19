@@ -1,4 +1,12 @@
-begin 
+/*
+   Expected output:
+   4
+
+   Expected stack:
+   0
+*/
+
+begin
    y : int,
    function f(x: int): int = { 
       print x + 2;

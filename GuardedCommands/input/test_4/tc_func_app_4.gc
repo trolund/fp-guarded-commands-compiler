@@ -1,3 +1,14 @@
+/*
+   Expected output:
+   0
+   30
+   30
+   0
+
+   Expected stack:
+   10  20  0
+*/
+
 begin 
    x : int,
    y : int,

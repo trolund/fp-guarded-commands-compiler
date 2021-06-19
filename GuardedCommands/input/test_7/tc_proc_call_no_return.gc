@@ -1,4 +1,13 @@
-begin 
+/*
+   Expected output:
+   4
+   2
+
+   Expected stack:
+   0
+*/
+
+begin
    y : int,
    procedure f(x: int) = { 
       print x + 2;

@@ -1,4 +1,12 @@
-begin 
+/*
+   Expected output:
+
+
+   Expected stack:
+   
+*/
+
+begin
    procedure f(x : int, y : int, p : bool) = {
       z : int;
       z := x + y;
@@ -6,5 +14,4 @@ begin
       print p;
       return
    };
-   f(2, 3, true)
 end

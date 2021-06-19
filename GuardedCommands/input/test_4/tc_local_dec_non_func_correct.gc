@@ -1,4 +1,12 @@
-begin 
+/*
+   Expected output:
+   1
+
+   Expected stack:
+   2  0
+*/
+
+begin
    x: int,
    y: int;
    {

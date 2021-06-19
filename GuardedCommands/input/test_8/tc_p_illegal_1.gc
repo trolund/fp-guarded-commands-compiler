@@ -1,4 +1,9 @@
-begin 
+/*
+   Expected output:
+   "System.Exception: illtyped assignment"
+*/
+
+begin
     y : ^int,
     x : int,
     z : int;

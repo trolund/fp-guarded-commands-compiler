@@ -1,0 +1,21 @@
+/*
+   Expected output:
+   4 
+   3 
+   2
+   1
+   0
+   10
+
+   Expected stack:
+   -1
+*/
+
+begin
+  x : int;
+  x := 4;
+  do  x=8            -> print 5
+   |  x >= 0 && x<=4 -> print x; x := x - 1
+  od;
+  print 10
+end

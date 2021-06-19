@@ -1,4 +1,9 @@
-begin 
+/*
+   Expected output:
+   "System.Exception: type check: faulty array declaration in function parameter"
+*/
+
+begin
    a: int[3],
    function f(x: int[3]): int = { y: int; y:= 1; return y };
 end

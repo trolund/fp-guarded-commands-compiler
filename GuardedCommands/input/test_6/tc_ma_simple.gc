@@ -1,4 +1,14 @@
-begin 
+/*
+   Expected output:
+   1
+   2
+   3
+
+   Expected stack:
+   1  2  3
+*/
+
+begin
     x: int,
     y: int,
     z: int;
