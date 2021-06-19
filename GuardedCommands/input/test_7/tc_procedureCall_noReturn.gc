@@ -1,8 +1,0 @@
-begin 
-   y : int,
-   procedure f(x: int) = { 
-      print x + 2;
-      print x
-   };
-   f(2)
-end

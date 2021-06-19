@@ -1,7 +1,0 @@
-begin 
-   function f() : int = { 
-      y : int;
-      y := 2;
-      return y
-   };
-end

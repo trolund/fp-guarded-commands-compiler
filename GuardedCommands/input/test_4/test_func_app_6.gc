@@ -1,7 +1,0 @@
-begin 
-   y: int[3],
-   function f(x : int[], y : int) : int = {
-      return y
-   };
-   print f(y, 10)
-end

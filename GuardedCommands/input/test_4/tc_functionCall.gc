@@ -1,9 +1,0 @@
-begin 
-   y : int,
-   function f(x: int): int = { 
-      print x + 2;
-      return x + 2
-   };
-   y := f(f(f(2)));
-   print y
-end

@@ -1,6 +1,0 @@
-begin 
-   x: int,
-   y: int[3];
-   y[0] := x+1;
-   print y + 1
-end

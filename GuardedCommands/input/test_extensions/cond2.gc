@@ -1,6 +1,0 @@
-begin
-    /* Skal printe true ud */
-    x : bool;
-    x := true;
-    print (x ? true : false)
-end

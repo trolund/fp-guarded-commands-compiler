@@ -1,5 +1,0 @@
-begin 
-   x: int,
-   y: int[0],
-   z: int[-3];
-end

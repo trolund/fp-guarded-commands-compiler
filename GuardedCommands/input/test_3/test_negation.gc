@@ -1,7 +1,0 @@
-begin
-  x : bool;
-  x := true;
-  
-  print !x;
-  print !!x;
-end

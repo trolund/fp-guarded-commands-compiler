@@ -1,9 +1,0 @@
-begin
-   x : bool,
-   y : bool;
-   x := true;
-   y := true;
- 
-   print x && y;
-   print y && (x && false) 
-end

@@ -1,9 +1,0 @@
-begin
-  x : int,
-  y : int;
-  x := 4;
-  y := 2;
- 
-  print x - y;
-  print y - x
-end
