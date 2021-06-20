@@ -21,7 +21,7 @@
 open GuardedCommands.Util
 open GuardedCommands.Frontend.TypeCheck
 open GuardedCommands.Frontend.AST
-open GuardedCommands.Backend.CodeGenerationOpt
+open GuardedCommands.Backend.CodeGeneration
 open PostScriptGenerator.Generator
 open Tree.TreeManager
 
@@ -34,7 +34,7 @@ System.IO.Directory.SetCurrentDirectory __SOURCE_DIRECTORY__;;
 
 // Basic tests ///////////////////////////////
 
-let testFile = "test_extensions/tc_cond_1_fail.gc";;
+let testFile = "test_extensions/tc_cond_2.gc";;
 
 let testTree = parseFromFile testFile
 

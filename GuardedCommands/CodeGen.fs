@@ -88,6 +88,12 @@ module CodeGeneration =
                                              | _    -> failwith "CE: this case is not possible"
                                    CE vEnv fEnv e1 @ CE vEnv fEnv e2 @ ins
         | Apply(f, es) -> call vEnv fEnv f es
+        | Ternary(b, t, f) ->  let labend = newLabel()
+                               let labfalse = newLabel()
+                               CE vEnv fEnv b @ 
+                               [IFNZRO labfalse] @ CE vEnv fEnv t @ [GOTO labend] @
+                               [Label labfalse] @ CE vEnv fEnv f @
+                               [Label labend]
         | _            -> failwith "CE: not supported yet"
     and CEs vEnv fEnv es = 
         List.collect (CE vEnv fEnv) es
@@ -119,7 +125,7 @@ module CodeGeneration =
                                [STOP] @ [Label labend]
         | Do (gc)           -> let labstart = newLabel()
                                [Label labstart] @
-                               gc' vEnv fEnv labstart gc                   
+                               gc' vEnv fEnv labstart gc               
         | Block([], stms)   -> CSs vEnv fEnv stms
         | Block(decs, stms) -> let (vEnv', code) = compileLocalDecs (vEnv, []) decs
                                code @ CSs vEnv' fEnv stms @ [INCSP (snd vEnv - snd vEnv')]
