@@ -1,5 +1,12 @@
+/*
+   Expected output:
+   10
+
+   Expected stack:
+   10
+*/
+
 begin
-    /* Skal printe 10 ud */
     x : int;
     x := 1;
     x := (x = 1 ? 10 : 100);

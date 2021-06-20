@@ -1,5 +1,12 @@
+/*
+   Expected output:
+   999
+
+   Expected stack:
+   1  10  999
+*/
+
 begin
-    /* Skal printe 999 */
     x : int,
     y : int,
     z : int;
