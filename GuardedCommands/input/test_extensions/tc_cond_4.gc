@@ -1,5 +1,21 @@
+/*
+   Expected output:
+   1
+   2
+   3
+   4
+   5
+   6
+   7
+   8
+   9
+   10
+
+   Expected stack:
+   10
+*/
+
 begin
-  /* Skal printe 1 til 10 ud */
   x : int;
   x := 1;
   do  (x < 10 ? true : false) -> print x; x := x + 1

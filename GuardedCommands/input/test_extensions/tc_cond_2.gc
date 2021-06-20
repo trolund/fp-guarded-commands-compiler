@@ -1,5 +1,12 @@
+/*
+   Expected output:
+   1
+
+   Expected stack:
+   1
+*/
+
 begin
-    /* Skal printe true ud */
     x : bool;
     x := true;
     print (x ? true : false)
