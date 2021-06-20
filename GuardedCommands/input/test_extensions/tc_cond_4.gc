@@ -1,9 +1,9 @@
 begin
-  /* Skal printe 1, 2 og 10 ud */
+  /* Skal printe 1 til 10 ud */
   x : int;
   x := 1;
   do  (x < 10 ? true : false) -> print x; x := x + 1
-   |  (x < 9 ? false : true)  -> print x; x := x + 3
+   |  (x < 9 ? true : false)  -> print x; x := x + 3
    |  (x < 5 ? true : false)  -> print x; x := x + 8
   od;
   print x

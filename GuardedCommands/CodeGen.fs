@@ -91,7 +91,7 @@ module CodeGeneration =
         | Ternary(b, t, f) ->  let labend = newLabel()
                                let labfalse = newLabel()
                                CE vEnv fEnv b @ 
-                               [IFNZRO labfalse] @ CE vEnv fEnv t @ [GOTO labend] @
+                               [IFZERO labfalse] @ CE vEnv fEnv t @ [GOTO labend] @
                                [Label labfalse] @ CE vEnv fEnv f @
                                [Label labend]
         | _            -> failwith "CE: not supported yet"
