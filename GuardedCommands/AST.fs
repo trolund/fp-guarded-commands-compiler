@@ -14,6 +14,7 @@ module AST =
          | Addr of Access              (* &x   or  &p^   or  &a[e]    *)
          | Apply of string * Exp list  (* Function application        *)
          | Ternary of Exp * Exp * Exp  (* (x > 10 ? 5 : 50 )          *)      //Additional Type
+         | PreInc of int * Access            (* ++x or ++a[e] or ++p^       *)      //Additional Type
 
    and Access = 
           | AVar of string             (* Variable access        x    *) 

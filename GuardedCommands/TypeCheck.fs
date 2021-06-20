@@ -37,6 +37,8 @@ module TypeCheck =
                                     | true      -> if (tcE gtenv ltenv e2 = tcE gtenv ltenv e3) then tcE gtenv ltenv e2 
                                                    else failwith "Illtyped ternary (exp 2 and 3 are different types)"
          | Ternary(_, _, _)   -> failwith "Illtyped ternary"
+         | PreInc(_,acc)        -> if tcA gtenv ltenv acc = ITyp then ITyp
+                                   else failwith "Illtyped pre-increment, must be int type"
          | _                  -> failwith "tcE: not supported yet"
 
    and tcMonadic gtenv ltenv f e = match (f, tcE gtenv ltenv e) with

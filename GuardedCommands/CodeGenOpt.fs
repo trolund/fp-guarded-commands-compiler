@@ -167,7 +167,8 @@ module CodeGenerationOpt =
        | Apply(f,es)      -> call f es vEnv fEnv k
        | Ternary(b, t, f) ->  let labend = newLabel()
                               let labfalse = newLabel()
-                              CE b vEnv fEnv (IFZERO labfalse :: CE t vEnv fEnv (GOTO labend :: Label labfalse :: CE f vEnv fEnv (Label labend :: k)))  
+                              CE b vEnv fEnv (IFZERO labfalse :: CE t vEnv fEnv (GOTO labend :: Label labfalse :: CE f vEnv fEnv (Label labend :: k)))
+       | PreInc(i,a)        -> CA a vEnv fEnv (DUP::LDI::(addCST i (ADD::STI::k)))  
        | _                -> failwith "CE: not supported yet"
        
    and CEs es vEnv fEnv k = 

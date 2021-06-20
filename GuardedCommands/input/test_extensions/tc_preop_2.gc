@@ -1,0 +1,30 @@
+/*
+   Expected output:
+   0
+   1
+   0
+   0
+   0
+   1
+   1
+   0
+
+   Expected stack:
+   1 1 0 0 0 4
+*/
+
+begin
+    a : int[3],
+    x : int,
+    y : ^int;
+    x,y := 3,&x;
+    a[0],a[1],a[2] := 1,1,1;
+    print --a[--x];
+    print --x;
+    print --y^;
+    print x;
+    print y^;
+    print a[0];
+    print a[1];
+    print a[2]
+end

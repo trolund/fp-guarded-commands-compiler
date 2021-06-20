@@ -94,6 +94,7 @@ module CodeGeneration =
                                [IFZERO labfalse] @ CE vEnv fEnv t @ [GOTO labend] @
                                [Label labfalse] @ CE vEnv fEnv f @
                                [Label labend]
+        | PreInc(i,a)    -> CA vEnv fEnv a @ [DUP; LDI; CSTI i; ADD; STI]
         | _            -> failwith "CE: not supported yet"
     and CEs vEnv fEnv es = 
         List.collect (CE vEnv fEnv) es
