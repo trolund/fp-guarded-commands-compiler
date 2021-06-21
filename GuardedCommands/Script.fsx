@@ -21,7 +21,8 @@
 open GuardedCommands.Util
 open GuardedCommands.Frontend.TypeCheck
 open GuardedCommands.Frontend.AST
-open GuardedCommands.Backend.CodeGeneration
+// open GuardedCommands.Backend.CodeGeneration
+open GuardedCommands.Backend.CodeGenerationOpt
 open PostScriptGenerator.Generator
 open Tree.TreeManager
 
@@ -60,7 +61,7 @@ programToPS "test_6/tc_overwritingAss.gc"
 
 // The Ex0.gc example:
 
-let ex0Tree = parseFromFile "Ex0.gc";;
+let ex0Tree = parseFromFile "test/Ex0.gc";;
 
 let _ = tcP ex0Tree;;
 
@@ -73,7 +74,7 @@ let _ = goTrace ex0Tree;;
 
 // Parsing of Ex1.gc
 
-let ex1Tree = parseFromFile "Ex1.gc";; 
+let ex1Tree = parseFromFile "test/Ex1.gc";; 
 
 // -- is typechecked as follows:
 
@@ -90,23 +91,20 @@ let sameStack = go ex1Tree;;
 
 // "All in one" parse from file, type check, compile and run 
 
-let _ = exec "Ex1.gc";;
+let _ = exec "test/Ex1.gc";;
 
-let _ = exec "Ex2.gc";;
+let _ = exec "test/Ex2.gc";;
 
 // Test of programs covered by the fifth task using optimized compilation (Section 8.2):
-List.iter execOpt ["Ex1.gc"; "Ex2.gc"];;
+List.iter execOpt ["test/Ex1.gc"; "test/Ex2.gc"];;
 
 // All programs relating to the basic version can be parsed:
-let pts = List.map parseFromFile ["Ex1.gc"; "Ex2.gc";"Ex3.gc"; "Ex4.gc"; "Ex5.gc"; "Ex6.gc"; "Skip.gc"];;
+let pts = List.map parseFromFile ["test/Ex1.gc"; "test/Ex2.gc";"test/Ex3.gc"; "test/Ex4.gc"; "test/Ex5.gc"; "test/Ex6.gc"; "test/Skip.gc"];;
 
 // The parse tree for Ex3.gc
 List.item 2 pts ;;
 
-
-
-
-let ex3Tree = parseFromFile "Ex3.gc";;
+let ex3Tree = parseFromFile "test/Ex3.gc";;
 
 let _ = tcP ex3Tree;;
 
@@ -116,25 +114,25 @@ let _ = go ex3Tree;;
 
 let _ = goTrace ex3Tree;;
 
-let _ = exec "Ex3.gc";;
+let _ = exec "test/Ex3.gc";;
 
-(*
+
 // Test of programs covered by the first task (Section 3.7):
-List.iter exec ["Ex1.gc"; "Ex2.gc";"Ex3.gc"; "Ex4.gc"; "Ex5.gc"; "Ex6.gc"; "Skip.gc"];;
+List.iter exec ["test/Ex1.gc"; "test/Ex2.gc";"test/Ex3.gc"; "test/Ex4.gc"; "test/Ex5.gc"; "test/Ex6.gc"; "test/Skip.gc"];;
 
 // Test of programs covered by the second task (Section 4.3):
-List.iter exec ["Ex7.gc"; "fact.gc"; "factRec.gc"; "factCBV.gc"];;
+List.iter exec ["test/Ex7.gc"; "test/fact.gc"; "test/factRec.gc"; "test/factCBV.gc"];;
 
 // Test of programs covered by the fourth task (Section 5.4):
-List.iter exec ["A0.gc"; "A1.gc"; "A2.gc"; "A3.gc"];;
+List.iter exec ["test/A0.gc"; "test/A1.gc"; "test/A2.gc"; "test/A3.gc"];;
 
 // Test of programs covered by the fifth task (Section 6.1):
-List.iter exec ["A4.gc"; "Swap.gc"; "QuickSortV1.gc"];;
+List.iter exec ["test/A4.gc"; "test/Swap.gc"; "test/QuickSortV1.gc"];;
 
 // Test of programs covered by the fifth task (Section 7.4):
-List.iter exec ["par1.gc"; "factImpPTyp.gc"; "QuickSortV2.gc"; "par2.gc"];;
+List.iter exec ["test/par1.gc"; "test/factImpPTyp.gc"; "test/QuickSortV2.gc"];;
 
 // Test of programs covered by the fifth task using optimized compilation (Section 8.2):
-List.iter execOpt ["par1.gc"; "factImpPTyp.gc"; "QuickSortV2.gc"; "par2.gc"];;
+List.iter execOpt ["test/par1.gc"; "test/factImpPTyp.gc"; "test/QuickSortV2.gc"];;
 
-*)
+
