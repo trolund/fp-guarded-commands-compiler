@@ -61,7 +61,7 @@ module TypeCheck =
                                           | FTyp(tl, Some(t)) -> if not (compareTypes tl expList) then failwith "Invalid argument types"
                                                                  else t
                                           | _                 -> failwith "invalid function application type" 
-   and tcNaryProcedure gtenv ltenv f es = let fType = Option.get(Map.tryFind f gtenv) // Consider merging with function
+   and tcNaryProcedure gtenv ltenv f es = let fType = Option.get(Map.tryFind f gtenv) // Merging with function problematic since fun returns Typ while Prod returns unit
                                           //Convert expression list to type list
                                           let expList = List.rev (List.fold (fun acc e -> tcE gtenv ltenv e::acc) [] es)
                                           
