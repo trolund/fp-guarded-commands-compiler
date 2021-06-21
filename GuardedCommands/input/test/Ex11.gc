@@ -86,6 +86,6 @@ begin
       | true -> skip
       fi
   } od;
-
+  /* Not part of original program */
   print sol
 end

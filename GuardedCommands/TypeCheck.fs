@@ -61,7 +61,7 @@ module TypeCheck =
                                           | FTyp(tl, Some(t)) -> if not (compareTypes tl expList) then failwith "Invalid argument types"
                                                                  else t
                                           | _                 -> failwith "invalid function application type" 
-   and tcNaryProcedure gtenv ltenv f es = let fType = Option.get(Map.tryFind f gtenv) // Consider merging with function
+   and tcNaryProcedure gtenv ltenv f es = let fType = Option.get(Map.tryFind f gtenv) // Merging with function problematic since fun returns Typ while Prod returns unit
                                           //Convert expression list to type list
                                           let expList = List.rev (List.fold (fun acc e -> tcE gtenv ltenv e::acc) [] es)
                                           
@@ -131,6 +131,8 @@ module TypeCheck =
                            gtenv'
    and tcFunDec ltenv = function
       | VarDec(ATyp(t,i),_) when not(t=ITyp || t=BTyp) || i <> None -> failwith "type check: faulty array declaration in function parameter"
+      | VarDec(PTyp(t), s) -> if not (t = ITyp || t = BTyp) then failwith "illtyped pointer"
+                              else Map.add s (PTyp(t)) ltenv
       | VarDec(t,s) -> Map.add s t ltenv
       | _ -> failwith "type check: faulty parameter in function declaration"
    and tcFunBod gtenv ltenv t = function
@@ -152,6 +154,9 @@ module TypeCheck =
                        | _         -> gtenv
    //Typechecking local env
    and tcLDec ltenv = function
+      | VarDec(ATyp(t,i),_) when not(t=ITyp || t=BTyp) || i = None || Option.get(i) < 1 -> failwith "type check: illtyped array declaration"
+      | VarDec(PTyp(t), s)        -> if not (t = ITyp || t = BTyp) then failwith "illtyped pointer"
+                                     else Map.add s (PTyp(t)) ltenv
       | VarDec(t,s)  -> Map.add s t ltenv
       | FunDec(_)    -> failwith "function/procedure declaration not allowed in block"
    and tcLDecs ltenv = function
