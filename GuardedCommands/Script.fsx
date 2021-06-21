@@ -21,8 +21,8 @@
 open GuardedCommands.Util
 open GuardedCommands.Frontend.TypeCheck
 open GuardedCommands.Frontend.AST
-open GuardedCommands.Backend.CodeGeneration
-// open GuardedCommands.Backend.CodeGenerationOpt
+open GuardedCommands.Backend.CodeGeneration // Swap with next line to use CP for optimised generator
+// open GuardedCommands.Backend.CodeGenerationOpt 
 open PostScriptGenerator.Generator
 open Tree.TreeManager
 
