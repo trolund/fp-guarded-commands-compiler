@@ -152,6 +152,9 @@ module TypeCheck =
                        | _         -> gtenv
    //Typechecking local env
    and tcLDec ltenv = function
+      | VarDec(ATyp(t,i),_) when not(t=ITyp || t=BTyp) || i = None || Option.get(i) < 1 -> failwith "type check: illtyped array declaration"
+      | VarDec(PTyp(t), s)        -> if not (t = ITyp || t = BTyp) then failwith "illtyped pointer"
+                                     else Map.add s (PTyp(t)) ltenv
       | VarDec(t,s)  -> Map.add s t ltenv
       | FunDec(_)    -> failwith "function/procedure declaration not allowed in block"
    and tcLDecs ltenv = function
