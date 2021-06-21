@@ -131,6 +131,8 @@ module TypeCheck =
                            gtenv'
    and tcFunDec ltenv = function
       | VarDec(ATyp(t,i),_) when not(t=ITyp || t=BTyp) || i <> None -> failwith "type check: faulty array declaration in function parameter"
+      | VarDec(PTyp(t), s) -> if not (t = ITyp || t = BTyp) then failwith "illtyped pointer"
+                              else Map.add s (PTyp(t)) ltenv
       | VarDec(t,s) -> Map.add s t ltenv
       | _ -> failwith "type check: faulty parameter in function declaration"
    and tcFunBod gtenv ltenv t = function
