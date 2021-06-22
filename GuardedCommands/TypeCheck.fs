@@ -147,6 +147,7 @@ module TypeCheck =
                                                         if List.exists (fun (e,_) -> tcE gtenv ltenv e <> BTyp) l
                                                         then failwith "type check: illtyped boolean expression in guarded command"
                                                         List.fold (fun seen (_,stml) -> List.fold (fun seen' stmt -> tcFunStm gtenv ltenv t stmt || seen') false stml || seen ) false l
+                                | Block([],stms) -> List.fold (fun seen stml -> tcFunStm gtenv ltenv t stml || seen ) false stms
                                 | s -> tcS gtenv ltenv s
                                        false
    and tcGDecs gtenv = function

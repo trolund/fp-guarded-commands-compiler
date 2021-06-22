@@ -1,13 +1,16 @@
 /*
    Expected output:
-   System.Exception: type check: function body missing return statement
+   4
+
+   Expected stack:
+   2
 */
 
 begin
    y : int,
    function f(x: int): int = { 
       print x + 2;
-      print x
+      {return x}
    };
    y := f(2)
 end

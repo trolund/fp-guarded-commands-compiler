@@ -35,7 +35,7 @@ System.IO.Directory.SetCurrentDirectory __SOURCE_DIRECTORY__;;
 
 // Basic tests ///////////////////////////////
 
-let testFile = "test_extensions/tc_preop_3.gc";;
+let testFile = "test_4/tc_func_app_nested_return.gc";;
 
 let testTree = parseFromFile testFile
 
@@ -129,8 +129,8 @@ List.iter execOpt ["test_3/tc_alternative_2.gc"; "test_3/tc_alternative_1.gc"; "
 List.iter exec ["test/Ex7.gc"; "test/fact.gc"; "test/factRec.gc"; "test/factCBV.gc"];;
 
 // Own tests
-List.iter exec ["test_4/tc_func_app_1.gc"; "test_4/tc_func_app_2.gc"; "test_4/tc_func_app_3.gc"; "test_4/tc_func_app_4.gc"; "test_4/tc_func_app_5.gc"; "test_4/tc_func_app_6.gc"; "test_4/tc_func_app.gc"; "test_4/tc_func_dec_1.gc"; "test_4/tc_func_dec_2.gc"; "test_4/tc_func_dec_3.gc"; "test_4/tc_func_dec_4.gc"; "test_4/tc_func_dec_alternative.gc"; "test_4/tc_func_global_dec_ass_1.gc"; "test_4/tc_func_local_dec_1.gc"; "test_4/tc_func_local_dec_2.gc"; "test_4/tc_func_local_dec_3.gc"; "test_4/tc_func_local_dec_app_1.gc"; "test_4/tc_func_local_dec_app_2.gc"; "test_4/tc_func_local_dec_app_3.gc"; "test_4/tc_local_dec_non_func_correct.gc"; "test_4/tc_local_dec.gc"];;
-List.iter execOpt ["test_4/tc_func_app_1.gc"; "test_4/tc_func_app_2.gc"; "test_4/tc_func_app_3.gc"; "test_4/tc_func_app_4.gc"; "test_4/tc_func_app_5.gc"; "test_4/tc_func_app_6.gc"; "test_4/tc_func_app.gc"; "test_4/tc_func_dec_1.gc"; "test_4/tc_func_dec_2.gc"; "test_4/tc_func_dec_3.gc"; "test_4/tc_func_dec_4.gc"; "test_4/tc_func_dec_alternative.gc"; "test_4/tc_func_global_dec_ass_1.gc"; "test_4/tc_func_local_dec_1.gc"; "test_4/tc_func_local_dec_2.gc"; "test_4/tc_func_local_dec_3.gc"; "test_4/tc_func_local_dec_app_1.gc"; "test_4/tc_func_local_dec_app_2.gc"; "test_4/tc_func_local_dec_app_3.gc"; "test_4/tc_local_dec_non_func_correct.gc"; "test_4/tc_local_dec.gc"];;
+List.iter exec ["test_4/tc_func_app_1.gc"; "test_4/tc_func_app_2.gc"; "test_4/tc_func_app_3.gc"; "test_4/tc_func_app_4.gc"; "test_4/tc_func_app_5.gc"; "test_4/tc_func_app_6.gc"; "test_4/tc_func_app.gc";"test_4/tc_func_app_nested_return.gc"; "test_4/tc_func_dec_1.gc"; "test_4/tc_func_dec_2.gc"; "test_4/tc_func_dec_3.gc"; "test_4/tc_func_dec_4.gc"; "test_4/tc_func_dec_alternative.gc"; "test_4/tc_func_global_dec_ass_1.gc"; "test_4/tc_func_local_dec_1.gc"; "test_4/tc_func_local_dec_2.gc"; "test_4/tc_func_local_dec_3.gc"; "test_4/tc_func_local_dec_app_1.gc"; "test_4/tc_func_local_dec_app_2.gc"; "test_4/tc_func_local_dec_app_3.gc"; "test_4/tc_local_dec_non_func_correct.gc"; "test_4/tc_local_dec.gc"];;
+List.iter execOpt ["test_4/tc_func_app_1.gc"; "test_4/tc_func_app_2.gc"; "test_4/tc_func_app_3.gc"; "test_4/tc_func_app_4.gc"; "test_4/tc_func_app_5.gc"; "test_4/tc_func_app_6.gc"; "test_4/tc_func_app.gc";"test_4/tc_func_app_nested_return.gc"; "test_4/tc_func_dec_1.gc"; "test_4/tc_func_dec_2.gc"; "test_4/tc_func_dec_3.gc"; "test_4/tc_func_dec_4.gc"; "test_4/tc_func_dec_alternative.gc"; "test_4/tc_func_global_dec_ass_1.gc"; "test_4/tc_func_local_dec_1.gc"; "test_4/tc_func_local_dec_2.gc"; "test_4/tc_func_local_dec_3.gc"; "test_4/tc_func_local_dec_app_1.gc"; "test_4/tc_func_local_dec_app_2.gc"; "test_4/tc_func_local_dec_app_3.gc"; "test_4/tc_local_dec_non_func_correct.gc"; "test_4/tc_local_dec.gc"];;
 
 
 // Test of programs covered by the fourth task (Section 5.4):
