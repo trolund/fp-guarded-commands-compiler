@@ -12,7 +12,7 @@ open GuardedCommands.Frontend.AST
 %token IF FI DO OD BEGIN END FUN PROC COND
 %token COMMA COLON SEMI BAR TO
 %token NEG PLUS MINUS TIMES DIV MOD AND OR EQ LE LT GE GT NEQ INC DEC
-%token PRINT ASG SKIP ABORT RET
+%token PRINT ASG SKIP ABORT RET 
 %token EOF
 %token HIGH
 
@@ -23,7 +23,7 @@ open GuardedCommands.Frontend.AST
 %left EQ LE LT GT GE NEQ
 %left PLUS MINUS 
 %left TIMES DIV MOD
-%nonassoc INC DEC
+%right INC DEC
 %right COND
 %left COMMA
 

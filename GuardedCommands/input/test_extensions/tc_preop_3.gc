@@ -1,0 +1,21 @@
+/*
+   Expected output:
+   0
+   1
+   0
+   0
+   0
+   1
+   1
+   0
+
+   Expected stack:
+   1 1 0 0 0 4
+*/
+
+begin
+    x : int,
+    y : int;
+    x,y := 1,1;
+    print x + ++y
+end

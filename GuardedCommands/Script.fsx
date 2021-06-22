@@ -35,7 +35,7 @@ System.IO.Directory.SetCurrentDirectory __SOURCE_DIRECTORY__;;
 
 // Basic tests ///////////////////////////////
 
-let testFile = "test_extensions/tc_cond_2.gc";;
+let testFile = "test_extensions/tc_preop_3.gc";;
 
 let testTree = parseFromFile testFile
 
@@ -162,7 +162,7 @@ List.iter execOpt ["test_8/tc_p_simple.gc"; "test_8/tc_p_to_p.gc"; "test_8/tc_p_
 List.iter execOpt ["test/par1.gc"; "test/factImpPTyp.gc"; "test/QuickSortV2.gc"];;
 
 // Own test of extensions
-List.iter exec ["test_extensions/tc_A0_comment.gc"; "test_extensions/tc_cond_1.gc"; "test_extensions/tc_cond_2.gc"; "test_extensions/tc_cond_3.gc"; "test_extensions/tc_cond_4.gc"; "test_extensions/tc_Ex11_comment.gc"; "test_extensions/tc_preop_1.gc"; "test_extensions/tc_preop_2.gc"];;
-List.iter execOpt ["test_extensions/tc_A0_comment.gc"; "test_extensions/tc_cond_1.gc"; "test_extensions/tc_cond_2.gc"; "test_extensions/tc_cond_3.gc"; "test_extensions/tc_cond_4.gc"; "test_extensions/tc_Ex11_comment.gc"; "test_extensions/tc_preop_1.gc"; "test_extensions/tc_preop_2.gc"];;
+List.iter exec ["test_extensions/tc_A0_comment.gc"; "test_extensions/tc_cond_1.gc"; "test_extensions/tc_cond_2.gc"; "test_extensions/tc_cond_3.gc"; "test_extensions/tc_cond_4.gc"; "test_extensions/tc_Ex11_comment.gc"; "test_extensions/tc_preop_1.gc"; "test_extensions/tc_preop_2.gc"; "test_extensions/tc_preop_3.gc"];;
+List.iter execOpt ["test_extensions/tc_A0_comment.gc"; "test_extensions/tc_cond_1.gc"; "test_extensions/tc_cond_2.gc"; "test_extensions/tc_cond_3.gc"; "test_extensions/tc_cond_4.gc"; "test_extensions/tc_Ex11_comment.gc"; "test_extensions/tc_preop_1.gc"; "test_extensions/tc_preop_2.gc"; "test_extensions/tc_preop_3.gc"];;
 
 
